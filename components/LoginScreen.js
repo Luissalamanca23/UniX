@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Modal, Portal, Provider, Snackbar } from 'react-native-paper';
+import { Modal, Portal, Provider, Snackbar, Button } from 'react-native-paper';
 
 // Cargar los datos de usuarios desde el archivo JSON
 const usuariosData = require('../usuarios.json'); // Ajusta la ruta según tu estructura de carpetas
@@ -42,6 +42,7 @@ const LoginScreen = () => {
     }
   };
 
+  // Función para manejar el cambio de contraseña
   const manejarCambioContraseña = () => {
     if (contraseñaActual === '' || nuevaContraseña === '' || confirmarNuevaContraseña === '') {
       setMensajeAlerta('Por favor, completa todos los campos.');
@@ -54,10 +55,20 @@ const LoginScreen = () => {
       return;
     }
 
-    // Aquí iría la lógica real para cambiar la contraseña
-    setMensajeAlerta('Contraseña cambiada con éxito.');
+    // Aquí simulamos el cambio de contraseña
+    const usuario = usuariosData.usuarios.find(
+      (user) => user.nombre.toLowerCase() === nombreUsuario.toLowerCase()
+    );
+
+    if (usuario && usuario.contraseña === contraseñaActual) {
+      usuario.contraseña = nuevaContraseña;  // Simulamos el cambio de contraseña
+      setMensajeAlerta('Contraseña cambiada con éxito.');
+      setMostrarModalCambioContraseña(false);
+    } else {
+      setMensajeAlerta('Contraseña actual incorrecta.');
+    }
+
     setMostrarAlerta(true);
-    setMostrarModalCambioContraseña(false);
     setContraseñaActual('');
     setNuevaContraseña('');
     setConfirmarNuevaContraseña('');
@@ -66,31 +77,38 @@ const LoginScreen = () => {
   return (
     <Provider>
       <View style={styles.container}>
+        {/* Título Superior con Nombre de la App */}
+        <Text style={styles.appTitle}>UnyX</Text>
+
         <Text style={styles.title}>Inicio de Sesión</Text>
 
-        <Text>Nombre de Usuario</Text>
         <TextInput
           value={nombreUsuario}
           onChangeText={setNombreUsuario}
           style={styles.input}
           placeholder="Nombre de Usuario"
+          placeholderTextColor="#666"
         />
 
-        <Text>Contraseña</Text>
         <TextInput
           value={contraseña}
           onChangeText={setContraseña}
           secureTextEntry
           style={styles.input}
           placeholder="Contraseña"
+          placeholderTextColor="#666"
         />
 
-        <Button title="Iniciar Sesión" onPress={manejarInicioSesion} />
+        <Button mode="contained" onPress={manejarInicioSesion} style={styles.button}>
+          Iniciar Sesión
+        </Button>
         <Button
-          title="Cambiar Contraseña"
+          mode="outlined"
           onPress={() => setMostrarModalCambioContraseña(true)}
-          color="gray"
-        />
+          style={styles.changePasswordButton}
+        >
+          Cambiar Contraseña
+        </Button>
 
         {/* Modal de Cambio de Contraseña */}
         <Portal>
@@ -101,34 +119,36 @@ const LoginScreen = () => {
           >
             <Text style={styles.modalTitle}>Cambiar Contraseña</Text>
 
-            <Text>Contraseña Actual</Text>
             <TextInput
               value={contraseñaActual}
               onChangeText={setContraseñaActual}
               secureTextEntry
               style={styles.input}
               placeholder="Contraseña Actual"
+              placeholderTextColor="#666"
             />
 
-            <Text>Nueva Contraseña</Text>
             <TextInput
               value={nuevaContraseña}
               onChangeText={setNuevaContraseña}
               secureTextEntry
               style={styles.input}
               placeholder="Nueva Contraseña"
+              placeholderTextColor="#666"
             />
 
-            <Text>Confirmar Nueva Contraseña</Text>
             <TextInput
               value={confirmarNuevaContraseña}
               onChangeText={setConfirmarNuevaContraseña}
               secureTextEntry
               style={styles.input}
               placeholder="Confirmar Nueva Contraseña"
+              placeholderTextColor="#666"
             />
 
-            <Button title="Cambiar Contraseña" onPress={manejarCambioContraseña} />
+            <Button mode="contained" onPress={manejarCambioContraseña} style={styles.button}>
+              Cambiar Contraseña
+            </Button>
           </Modal>
         </Portal>
 
@@ -137,6 +157,13 @@ const LoginScreen = () => {
           visible={mostrarAlerta}
           onDismiss={() => setMostrarAlerta(false)}
           duration={3000}
+          action={{
+            label: 'OK',
+            onPress: () => {
+              setMostrarAlerta(false);
+            },
+          }}
+          style={styles.snackbar}
         >
           {mensajeAlerta}
         </Snackbar>
@@ -150,31 +177,59 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: '#f4f6f9',
+  },
+  appTitle: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#4A90E2', // Color llamativo para el nombre de la app
+    marginBottom: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
+    color: '#333',
   },
   input: {
     marginBottom: 15,
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ddd',
+    color: '#333',
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: '#4A90E2', // Color llamativo para botones
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  changePasswordButton: {
+    marginTop: 10,
+    borderColor: '#4A90E2',
+    borderWidth: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
   },
   modalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF',
     padding: 20,
     margin: 20,
     borderRadius: 10,
+    elevation: 5,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 24,
     marginBottom: 20,
     textAlign: 'center',
+    color: '#4A90E2',
+  },
+  snackbar: {
+    backgroundColor: '#4A90E2',
   },
 });
 
