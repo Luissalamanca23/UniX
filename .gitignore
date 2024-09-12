@@ -1,14 +1,16 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# Aprende más en https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# dependencies
+# Dependencias
 node_modules/
+jspm_packages/
 
 # Expo
 .expo/
+.expo-shared/
 dist/
 web-build/
 
-# Native
+# Archivos Nativos
 *.orig.*
 *.jks
 *.p8
@@ -16,20 +18,107 @@ web-build/
 *.key
 *.mobileprovision
 
-# Metro
+# Metro (Herramienta de Bundling de React Native)
 .metro-health-check*
 
-# debug
+# Archivos de Debug (depuración)
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
+# macOS (Archivos generados por el sistema operativo)
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 *.pem
 
-# local env files
+# Archivos de entorno local
 .env*.local
 
-# typescript
+# Archivos de Typescript
 *.tsbuildinfo
+
+# Archivos de Registro (Logs)
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Datos de Ejecución
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directorio para Bibliotecas Instrumentadas Generadas por jscoverage/JSCover
+lib-cov
+
+# Directorio de Cobertura Usado por Herramientas como Istanbul
+coverage
+*.lcov
+
+# Cobertura de Pruebas de NYC
+.nyc_output
+
+# Almacenamiento Intermedio de Grunt (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Complementos Binarios Compilados (https://nodejs.org/api/addons.html)
+build/Release
+
+# Caché Opcional de npm
+.npm
+
+# Caché Opcional de eslint
+.eslintcache
+
+# Archivos de IDEs y Editores
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Archivos de Firebase
+ios/GoogleService-Info.plist
+android/app/google-services.json
+
+# Archivos de Fastlane
+ios/fastlane/report.xml
+ios/fastlane/screenshots/**/*.png
+ios/fastlane/test_output/**/*.log
+
+# Archivos de Paquetes
+*.bundle
+
+# Archivos de Salida de Compilación
+android/.gradle/
+android/app/build/
+android/build/
+ios/Pods/
+ios/build/
+ios/DerivedData/
+*.xcodeproj/xcuserdata
+*.xcodeproj/project.xcworkspace
+*.xcuserdata/
+
+# Archivos de Símbolo de Depuración de Sentry
+**/main.dSYM.zip
+**/*.dSYM.zip
+
+# Archivos Misceláneos
+.vscode/
+.idea/
+*.swp
+*~
+
+# Archivos de Bloqueo
+package-lock.json
+yarn.lock
