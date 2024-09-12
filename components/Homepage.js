@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Image } from 'react-native';
 import { Avatar, Badge, FAB, ProgressBar, Card, Title, Paragraph, Appbar, Searchbar, Menu, Divider } from 'react-native-paper';
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import QRCode from 'react-native-qrcode-svg';
 import Modal from 'react-native-modal';
+
+// Importar imágenes locales
+import img1 from '../assets/images.jpeg';
+import img2 from '../assets/images-2.jpeg';
+import img3 from '../assets/images-3.jpeg';
+import img4 from '../assets/images-4.jpeg';
+import img5 from '../assets/images-5.jpeg';
 
 const Homepage = () => {
   const [progress, setProgress] = useState(0.13);
@@ -29,14 +36,12 @@ const Homepage = () => {
       return;
     }
 
-    // Simular registro y envío de correo
     setTimeout(() => {
-      setRegisteredEvents(prev => ({...prev, [eventId]: true}));
+      setRegisteredEvents(prev => ({ ...prev, [eventId]: true }));
       Alert.alert(
         "Registro Exitoso",
         "Te has inscrito al evento. Se ha enviado un correo de confirmación a tu dirección registrada."
       );
-      // Generar QR code
       const qrData = `event-${eventId}-user-123-${Date.now()}`;
       setCurrentQR(qrData);
       setShowQRModal(true);
@@ -44,17 +49,16 @@ const Homepage = () => {
   };
 
   const validateQR = (qrData) => {
-    // Simular validación del QR
     Alert.alert("QR Válido", "Bienvenido al evento. Tu participación ha sido registrada.");
     setShowQRModal(false);
   };
 
   const featuredEvents = [
-    { id: 1, title: "Festival de Primavera", date: "Mayo 15, 2023", image: "https://placehold.co/300x150?text=Evento+1" },
-    { id: 2, title: "Hackathon Universitario", date: "Junio 5, 2023", image: "https://placehold.co/300x150?text=Evento+2" },
-    { id: 3, title: "Feria de Ciencias", date: "Julio 10, 2023", image: "https://placehold.co/300x150?text=Evento+3" },
-    { id: 4, title: "Concierto de Verano", date: "Agosto 20, 2023", image: "https://placehold.co/300x150?text=Evento+4" },
-    { id: 5, title: "Maratón Universitaria", date: "Septiembre 3, 2023", image: "https://placehold.co/300x150?text=Evento+5" },
+    { id: 1, title: "Festival de Primavera", date: "Mayo 15, 2023", image: img1 },
+    { id: 2, title: "Hackathon Universitario", date: "Junio 5, 2023", image: img2 },
+    { id: 3, title: "Feria de Ciencias", date: "Julio 10, 2023", image: img3 },
+    { id: 4, title: "Concierto de Verano", date: "Agosto 20, 2023", image: img4 },
+    { id: 5, title: "Maratón Universitaria", date: "Septiembre 3, 2023", image: img5 },
   ];
 
   return (
@@ -85,6 +89,7 @@ const Homepage = () => {
       </Appbar.Header>
 
       <ScrollView contentContainerStyle={styles.container}>
+        
         {/* Featured Events */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Eventos Destacados</Text>
@@ -92,14 +97,15 @@ const Homepage = () => {
             {featuredEvents.map((event) => (
               <View style={styles.slide} key={event.id}>
                 <Card style={styles.eventCard}>
-                  <Card.Cover source={{ uri: event.image }} />
+                  {/* Ajuste de imagen para que se ajuste al contenedor */}
+                  <Image source={event.image} style={styles.eventImage} resizeMode="contain" />
                   <Card.Content>
                     <Title>{event.title}</Title>
                     <Paragraph>{event.date}</Paragraph>
                   </Card.Content>
                   <Card.Actions>
-                    <TouchableOpacity 
-                      style={[styles.button, registeredEvents[event.id] ? styles.registeredButton : {}]} 
+                    <TouchableOpacity
+                      style={[styles.button, registeredEvents[event.id] ? styles.registeredButton : {}]}
                       onPress={() => registerForEvent(event.id)}
                     >
                       <Text style={styles.buttonText}>
@@ -118,8 +124,8 @@ const Homepage = () => {
           <Text style={styles.sectionTitle}>Noticias Universitarias</Text>
           {[1, 2, 3].map((post) => (
             <Card key={post} style={styles.card}>
-              <Card.Title 
-                title={`Actualización de Noticias ${post}`} 
+              <Card.Title
+                title={`Actualización de Noticias ${post}`}
                 subtitle={`Abril ${post + 14}, 2023`}
                 left={(props) => <Avatar.Icon {...props} icon="newspaper" />}
               />
@@ -227,6 +233,10 @@ const styles = StyleSheet.create({
   eventCard: {
     width: '90%',
     elevation: 3,
+  },
+  eventImage: {
+    width: '100%',
+    height: 150,  // Mantiene la altura a 150 para respetar el tamaño solicitado
   },
   card: {
     marginBottom: 15,
