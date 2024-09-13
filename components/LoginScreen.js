@@ -3,8 +3,8 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Modal, Portal, Provider, Snackbar, Button } from 'react-native-paper';
 
-// Cargar los datos de usuarios desde el archivo JSON
-const usuariosData = require('../usuarios.json'); // Ajusta la ruta según tu estructura de carpetas
+// Importar los datos de usuarios
+let usuariosData = require('../usuarios.json');
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -13,11 +13,11 @@ const LoginScreen = () => {
   const [mostrarAlerta, setMostrarAlerta] = useState(false);
   const [mensajeAlerta, setMensajeAlerta] = useState('');
   const [mostrarModalCambioContraseña, setMostrarModalCambioContraseña] = useState(false);
+  const [nombreUsuarioCambio, setNombreUsuarioCambio] = useState('');
   const [contraseñaActual, setContraseñaActual] = useState('');
   const [nuevaContraseña, setNuevaContraseña] = useState('');
   const [confirmarNuevaContraseña, setConfirmarNuevaContraseña] = useState('');
 
-  // Función para manejar el inicio de sesión
   const manejarInicioSesion = () => {
     if (nombreUsuario === '' || contraseña === '') {
       setMensajeAlerta('Por favor, ingresa tu nombre de usuario y contraseña.');
@@ -25,7 +25,6 @@ const LoginScreen = () => {
       return;
     }
 
-    // Buscar el usuario en los datos cargados
     const usuario = usuariosData.usuarios.find(
       (user) => user.nombre.toLowerCase() === nombreUsuario.toLowerCase()
     );
@@ -34,7 +33,7 @@ const LoginScreen = () => {
       setMensajeAlerta('Inicio de sesión exitoso. ¡Bienvenido!');
       setMostrarAlerta(true);
       setTimeout(() => {
-        navigation.navigate('Home'); // Asegúrate de que 'Home' esté registrado
+        navigation.navigate('Home');
       }, 1500);
     } else {
       setMensajeAlerta('Nombre de usuario o contraseña incorrectos.');
@@ -42,9 +41,27 @@ const LoginScreen = () => {
     }
   };
 
-  // Función para manejar el cambio de contraseña
+  const actualizarContraseña = (nombreUsuario, nuevaContraseña) => {
+    const usuarioIndex = usuariosData.usuarios.findIndex(
+      (user) => user.nombre.toLowerCase() === nombreUsuario.toLowerCase()
+    );
+    
+    if (usuarioIndex !== -1) {
+      usuariosData.usuarios[usuarioIndex].contraseña = nuevaContraseña;
+      // Aquí simularemos guardar los cambios
+      guardarCambios();
+      return true;
+    }
+    return false;
+  };
+
+  const guardarCambios = () => {
+    // En una aplicación real, aquí enviarías los datos actualizados a un servidor
+    console.log('Datos actualizados:', JSON.stringify(usuariosData, null, 2));
+  };
+
   const manejarCambioContraseña = () => {
-    if (contraseñaActual === '' || nuevaContraseña === '' || confirmarNuevaContraseña === '') {
+    if (nombreUsuarioCambio === '' || contraseñaActual === '' || nuevaContraseña === '' || confirmarNuevaContraseña === '') {
       setMensajeAlerta('Por favor, completa todos los campos.');
       setMostrarAlerta(true);
       return;
@@ -55,20 +72,23 @@ const LoginScreen = () => {
       return;
     }
 
-    // Aquí simulamos el cambio de contraseña
     const usuario = usuariosData.usuarios.find(
-      (user) => user.nombre.toLowerCase() === nombreUsuario.toLowerCase()
+      (user) => user.nombre.toLowerCase() === nombreUsuarioCambio.toLowerCase()
     );
 
     if (usuario && usuario.contraseña === contraseñaActual) {
-      usuario.contraseña = nuevaContraseña;  // Simulamos el cambio de contraseña
-      setMensajeAlerta('Contraseña cambiada con éxito.');
-      setMostrarModalCambioContraseña(false);
+      if (actualizarContraseña(nombreUsuarioCambio, nuevaContraseña)) {
+        setMensajeAlerta('Contraseña cambiada con éxito.');
+        setMostrarModalCambioContraseña(false);
+      } else {
+        setMensajeAlerta('Error al actualizar la contraseña.');
+      }
     } else {
-      setMensajeAlerta('Contraseña actual incorrecta.');
+      setMensajeAlerta('Nombre de usuario o contraseña actual incorrectos.');
     }
 
     setMostrarAlerta(true);
+    setNombreUsuarioCambio('');
     setContraseñaActual('');
     setNuevaContraseña('');
     setConfirmarNuevaContraseña('');
@@ -77,9 +97,7 @@ const LoginScreen = () => {
   return (
     <Provider>
       <View style={styles.container}>
-        {/* Título Superior con Nombre de la App */}
         <Text style={styles.appTitle}>UnyX</Text>
-
         <Text style={styles.title}>Inicio de Sesión</Text>
 
         <TextInput
@@ -110,7 +128,6 @@ const LoginScreen = () => {
           Cambiar Contraseña
         </Button>
 
-        {/* Modal de Cambio de Contraseña */}
         <Portal>
           <Modal
             visible={mostrarModalCambioContraseña}
@@ -118,6 +135,14 @@ const LoginScreen = () => {
             contentContainerStyle={styles.modalContainer}
           >
             <Text style={styles.modalTitle}>Cambiar Contraseña</Text>
+
+            <TextInput
+              value={nombreUsuarioCambio}
+              onChangeText={setNombreUsuarioCambio}
+              style={styles.input}
+              placeholder="Nombre de Usuario"
+              placeholderTextColor="#666"
+            />
 
             <TextInput
               value={contraseñaActual}
@@ -152,7 +177,6 @@ const LoginScreen = () => {
           </Modal>
         </Portal>
 
-        {/* Snackbar de Alerta */}
         <Snackbar
           visible={mostrarAlerta}
           onDismiss={() => setMostrarAlerta(false)}
@@ -183,7 +207,7 @@ const styles = StyleSheet.create({
     fontSize: 48,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#4A90E2', // Color llamativo para el nombre de la app
+    color: '#4A90E2',
     marginBottom: 10,
   },
   title: {
@@ -204,7 +228,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
-    backgroundColor: '#4A90E2', // Color llamativo para botones
+    backgroundColor: '#4A90E2',
     paddingVertical: 10,
     borderRadius: 8,
   },

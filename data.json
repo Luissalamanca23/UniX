@@ -1,0 +1,163 @@
+{
+  "eventos": [
+    {
+      "id": 1,
+      "nombre": "Concierto de Verano",
+      "fecha": "2023-08-20",
+      "descripcion": "Un concierto de verano al aire libre con varias bandas locales.",
+      "ubicacion": "Parque Central",
+      "foto_portada": "https://placehold.co/300x150?text=Evento+4",
+      "inscritos": [
+        {
+          "id_usuario": 101,
+          "nombre_usuario": "Luis S",
+          "email": "luis@example.com"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Seminario de Tecnología",
+      "fecha": "2023-09-12",
+      "descripcion": "Un seminario de todo el día sobre las últimas tendencias en tecnología.",
+      "ubicacion": "Auditorio Universidad",
+      "foto_portada": "https://placehold.co/300x150?text=Evento+2",
+      "inscritos": []
+    },
+    {
+      "id": 3,
+      "nombre": "Festival de Primavera",
+      "fecha": "2023-10-05",
+      "descripcion": "Un festival de primavera con actividades para toda la familia.",
+      "ubicacion": "Plaza Principal",
+      "foto_portada": "https://placehold.co/300x150?text=Evento+1",
+      "inscritos": []
+    },
+    {
+      "id": 4,
+      "nombre": "Hackathon Universitario",
+      "fecha": "2023-06-05",
+      "descripcion": "Hackathon para estudiantes universitarios de todas las carreras.",
+      "ubicacion": "Laboratorio de Computación",
+      "foto_portada": "https://placehold.co/300x150?text=Evento+3",
+      "inscritos": []
+    },
+    {
+      "id": 5,
+      "nombre": "Maratón Universitaria",
+      "fecha": "2023-09-03",
+      "descripcion": "Maratón anual de la universidad para estudiantes y personal.",
+      "ubicacion": "Estadio Universitario",
+      "foto_portada": "https://placehold.co/300x150?text=Evento+5",
+      "inscritos": []
+    }
+  ],
+  "noticias": [
+    {
+      "id": 1,
+      "titulo": "Actualización de Noticias 1",
+      "fecha": "2023-04-15",
+      "contenido": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "categoria": "Universidad",
+      "imagen_url": "https://placehold.co/300x200?text=Noticia+1"
+    },
+    {
+      "id": 2,
+      "titulo": "Actualización de Noticias 2",
+      "fecha": "2023-04-16",
+      "contenido": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "categoria": "Tecnología",
+      "imagen_url": "https://placehold.co/300x200?text=Noticia+2"
+    }
+  ],
+  "usuarios": [
+    {
+      "id": 101,
+      "nombre": "Luis S",
+      "email": "luis@example.com",
+      "contraseñaHasheada": "$2b$10$uM4OYO7s4GhZZ1Hezt7BUO74E7h4/tkBS.KpRZqS09ikmUop/MF3S",
+      "nivel": 4,
+      "puntos": 1500,
+      "roles": ["usuario", "organizador"]
+    },
+    {
+      "id": 102,
+      "nombre": "Ana M",
+      "email": "ana@example.com",
+      "contraseñaHasheada": "$2b$10$1wJx2sDz17QxsvzlmjQK1OnnGfYIhGpZ/nhtpVzW2eSc3TZT0/FCu",
+      "nivel": 3,
+      "puntos": 1200,
+      "roles": ["usuario"]
+    }
+  ],
+  "configuracion": {
+    "tema": "claro",
+    "idioma": "es",
+    "notificaciones": {
+      "eventos": true,
+      "noticias": false,
+      "mensajes": true
+    },
+    "privacidad": {
+      "mostrar_email": false,
+      "mostrar_telefono": true
+    }
+  },
+  "niveles": [
+    {
+      "nivel": 1,
+      "descripcion": "Novato",
+      "puntos_requeridos": 0
+    },
+    {
+      "nivel": 2,
+      "descripcion": "Aprendiz",
+      "puntos_requeridos": 500
+    },
+    {
+      "nivel": 3,
+      "descripcion": "Intermedio",
+      "puntos_requeridos": 1000
+    },
+    {
+      "nivel": 4,
+      "descripcion": "Erudito",
+      "puntos_requeridos": 1500
+    },
+    {
+      "nivel": 5,
+      "descripcion": "Maestro",
+      "puntos_requeridos": 2000
+    }
+  ],
+  "gamificacion": {
+    "insignias": [
+      {
+        "id": 1,
+        "nombre": "Asistente Frecuente",
+        "descripcion": "Participa en 5 eventos.",
+        "icono_url": "https://placehold.co/40x40?text=Badge+1"
+      },
+      {
+        "id": 2,
+        "nombre": "Lector Ávido",
+        "descripcion": "Lee 10 noticias.",
+        "icono_url": "https://placehold.co/40x40?text=Badge+2"
+      }
+    ],
+    "misiones": [
+      {
+        "id": 1,
+        "titulo": "Participa en un evento de tecnología",
+        "descripcion": "Asiste a un evento relacionado con la tecnología para ganar puntos extra.",
+        "puntos_ganados": 200
+      },
+      {
+        "id": 2,
+        "titulo": "Comparte una noticia",
+        "descripcion": "Comparte una noticia en redes sociales.",
+        "puntos_ganados": 50
+      }
+    ]
+  }
+}
