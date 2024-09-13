@@ -122,3 +122,4 @@ ios/DerivedData/
 # Archivos de Bloqueo
 package-lock.json
 yarn.lock
+.env
