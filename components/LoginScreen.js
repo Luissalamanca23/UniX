@@ -96,8 +96,12 @@ const LoginScreen = () => {
 
   return (
     <Provider>
+      <View style={styles.betaContainer}>
+          <Text style={styles.betaText}>BETA</Text>
+        </View>
       <View style={styles.container}>
         <Text style={styles.appTitle}>UnyX</Text>
+        <Text style={styles.appParrafo}>¡Bienvenido a UnyX, La App para Estudiantes!</Text>
         <Text style={styles.title}>Inicio de Sesión</Text>
 
         <TextInput
@@ -197,6 +201,21 @@ const LoginScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  betaContainer: {
+    position: 'absolute',
+    top: 20,
+    right: -30,
+    backgroundColor: '#FF6B6B',
+    paddingVertical: 5,
+    paddingHorizontal: 30,
+    transform: [{ rotate: '45deg' }],
+    zIndex: 1000,
+  },
+  betaText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -216,6 +235,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     color: '#333',
+  },
+  appParrafo: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#666',
+    marginBottom: 20,
   },
   input: {
     marginBottom: 15,
