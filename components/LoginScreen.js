@@ -72,7 +72,7 @@ const LoginScreen = () => {
       setMensajeAlerta('Inicio de sesión exitoso. ¡Bienvenido!');
       setMostrarAlerta(true);
       setTimeout(() => {
-        navigation.navigate('Home');
+        navigation.navigate('Home', { usuario }); // Pasar los datos del usuario al componente Home
       }, 1500);
     } else {
       setMensajeAlerta('Nombre de usuario o contraseña incorrectos.');
