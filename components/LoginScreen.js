@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Modal, Portal, Provider, Snackbar, Button } from 'react-native-paper';
-
-// Importar los datos de usuarios
-let usuariosData = require('../usuarios.json');
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -17,6 +15,47 @@ const LoginScreen = () => {
   const [contraseñaActual, setContraseñaActual] = useState('');
   const [nuevaContraseña, setNuevaContraseña] = useState('');
   const [confirmarNuevaContraseña, setConfirmarNuevaContraseña] = useState('');
+  const [mostrarModalRegistro, setMostrarModalRegistro] = useState(false);
+  const [nuevoNombreUsuario, setNuevoNombreUsuario] = useState('');
+  const [nuevoEmail, setNuevoEmail] = useState('');
+  const [nuevaContraseñaRegistro, setNuevaContraseñaRegistro] = useState('');
+  const [usuariosData, setUsuariosData] = useState({ usuarios: [] });
+
+  useEffect(() => {
+    // Cargar usuarios al inicio
+    cargarUsuarios();
+  }, []);
+
+  const cargarUsuarios = async () => {
+    try {
+      const usuariosGuardados = await AsyncStorage.getItem('usuarios');
+      if (usuariosGuardados !== null) {
+        setUsuariosData(JSON.parse(usuariosGuardados));
+      } else {
+        // Inicializar con datos por defecto
+        const usuariosPorDefecto = {
+          usuarios: [
+            { id: 101, nombre: 'Admin', email: 'luis@example.com', contraseña: '1234' },
+            { id: 102, nombre: 'Ana M', email: 'ana@example.com', contraseña: '5678' },
+          ],
+        };
+        setUsuariosData(usuariosPorDefecto);
+        await AsyncStorage.setItem('usuarios', JSON.stringify(usuariosPorDefecto));
+      }
+    } catch (error) {
+      console.error('Error al cargar los usuarios:', error);
+    }
+  };
+
+  const guardarUsuarios = async (nuevosDatos) => {
+    try {
+      setUsuariosData(nuevosDatos);
+      await AsyncStorage.setItem('usuarios', JSON.stringify(nuevosDatos));
+      console.log('Datos actualizados:', JSON.stringify(nuevosDatos, null, 2));
+    } catch (error) {
+      console.error('Error al guardar los usuarios:', error);
+    }
+  };
 
   const manejarInicioSesion = () => {
     if (nombreUsuario === '' || contraseña === '') {
@@ -41,23 +80,36 @@ const LoginScreen = () => {
     }
   };
 
-  const actualizarContraseña = (nombreUsuario, nuevaContraseña) => {
-    const usuarioIndex = usuariosData.usuarios.findIndex(
-      (user) => user.nombre.toLowerCase() === nombreUsuario.toLowerCase()
-    );
-    
-    if (usuarioIndex !== -1) {
-      usuariosData.usuarios[usuarioIndex].contraseña = nuevaContraseña;
-      // Aquí simularemos guardar los cambios
-      guardarCambios();
-      return true;
+  const manejarRegistroUsuario = () => {
+    if (nuevoNombreUsuario === '' || nuevoEmail === '' || nuevaContraseñaRegistro === '') {
+      setMensajeAlerta('Por favor, completa todos los campos para registrarte.');
+      setMostrarAlerta(true);
+      return;
     }
-    return false;
-  };
 
-  const guardarCambios = () => {
-    // En una aplicación real, aquí enviarías los datos actualizados a un servidor
-    console.log('Datos actualizados:', JSON.stringify(usuariosData, null, 2));
+    const usuarioExistente = usuariosData.usuarios.find(
+      (user) => user.nombre.toLowerCase() === nuevoNombreUsuario.toLowerCase() || user.email.toLowerCase() === nuevoEmail.toLowerCase()
+    );
+
+    if (usuarioExistente) {
+      setMensajeAlerta('El nombre de usuario o correo ya están en uso.');
+      setMostrarAlerta(true);
+      return;
+    }
+
+    const nuevoUsuario = {
+      id: usuariosData.usuarios.length + 101,
+      nombre: nuevoNombreUsuario,
+      email: nuevoEmail,
+      contraseña: nuevaContraseñaRegistro,
+    };
+
+    const nuevosUsuariosData = { ...usuariosData, usuarios: [...usuariosData.usuarios, nuevoUsuario] };
+    guardarUsuarios(nuevosUsuariosData);
+
+    setMensajeAlerta('Usuario registrado con éxito. Ahora puedes iniciar sesión.');
+    setMostrarAlerta(true);
+    setMostrarModalRegistro(false);
   };
 
   const manejarCambioContraseña = () => {
@@ -72,33 +124,28 @@ const LoginScreen = () => {
       return;
     }
 
-    const usuario = usuariosData.usuarios.find(
+    const usuarioIndex = usuariosData.usuarios.findIndex(
       (user) => user.nombre.toLowerCase() === nombreUsuarioCambio.toLowerCase()
     );
 
-    if (usuario && usuario.contraseña === contraseñaActual) {
-      if (actualizarContraseña(nombreUsuarioCambio, nuevaContraseña)) {
-        setMensajeAlerta('Contraseña cambiada con éxito.');
-        setMostrarModalCambioContraseña(false);
-      } else {
-        setMensajeAlerta('Error al actualizar la contraseña.');
-      }
+    if (usuarioIndex !== -1 && usuariosData.usuarios[usuarioIndex].contraseña === contraseñaActual) {
+      const nuevosUsuarios = { ...usuariosData };
+      nuevosUsuarios.usuarios[usuarioIndex].contraseña = nuevaContraseña;
+      guardarUsuarios(nuevosUsuarios);
+      setMensajeAlerta('Contraseña cambiada con éxito.');
+      setMostrarModalCambioContraseña(false);
     } else {
       setMensajeAlerta('Nombre de usuario o contraseña actual incorrectos.');
     }
 
     setMostrarAlerta(true);
-    setNombreUsuarioCambio('');
-    setContraseñaActual('');
-    setNuevaContraseña('');
-    setConfirmarNuevaContraseña('');
   };
 
   return (
     <Provider>
       <View style={styles.betaContainer}>
-          <Text style={styles.betaText}>BETA</Text>
-        </View>
+        <Text style={styles.betaText}>BETA</Text>
+      </View>
       <View style={styles.container}>
         <Text style={styles.appTitle}>UnyX</Text>
         <Text style={styles.appParrafo}>¡Bienvenido a UnyX, La App para Estudiantes!</Text>
@@ -132,7 +179,54 @@ const LoginScreen = () => {
           Cambiar Contraseña
         </Button>
 
+        <Button
+          mode="outlined"
+          onPress={() => setMostrarModalRegistro(true)}
+          style={styles.changePasswordButton}
+        >
+          Registrarse
+        </Button>
+
+        {/* Modal para el registro de usuario */}
         <Portal>
+          <Modal
+            visible={mostrarModalRegistro}
+            onDismiss={() => setMostrarModalRegistro(false)}
+            contentContainerStyle={styles.modalContainer}
+          >
+            <Text style={styles.modalTitle}>Registrar Nuevo Usuario</Text>
+
+            <TextInput
+              value={nuevoNombreUsuario}
+              onChangeText={setNuevoNombreUsuario}
+              style={styles.input}
+              placeholder="Nombre de Usuario"
+              placeholderTextColor="#666"
+            />
+
+            <TextInput
+              value={nuevoEmail}
+              onChangeText={setNuevoEmail}
+              style={styles.input}
+              placeholder="Correo Electrónico"
+              placeholderTextColor="#666"
+            />
+
+            <TextInput
+              value={nuevaContraseñaRegistro}
+              onChangeText={setNuevaContraseñaRegistro}
+              secureTextEntry
+              style={styles.input}
+              placeholder="Contraseña"
+              placeholderTextColor="#666"
+            />
+
+            <Button mode="contained" onPress={manejarRegistroUsuario} style={styles.button}>
+              Registrar Usuario
+            </Button>
+          </Modal>
+
+          {/* Modal para el cambio de contraseña */}
           <Modal
             visible={mostrarModalCambioContraseña}
             onDismiss={() => setMostrarModalCambioContraseña(false)}
