@@ -1,8 +1,8 @@
 // src/components/PerfilScreen.js
 
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
-import { Avatar, Divider, List, Button } from 'react-native-paper';
+import { View, Text, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { Avatar, Divider, List, Button, Card } from 'react-native-paper';
 import { useRoute, useNavigation } from '@react-navigation/native';
 
 const PerfilScreen = () => {
@@ -12,66 +12,80 @@ const PerfilScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
+      {/* Header con imagen de fondo */}
       <View style={styles.header}>
-        <Avatar.Image size={80} source={{ uri: 'https://placehold.co/100x100' }} />
+        <Image
+          source={{ uri: 'https://placehold.co/600x200' }}
+          style={styles.headerBackground}
+        />
+        <Avatar.Image
+          size={100}
+          source={{ uri: 'https://placehold.co/100x100' }}
+          style={styles.avatar}
+        />
         <Text style={styles.username}>{usuario?.nombre || 'Usuario'}</Text>
         <Text style={styles.email}>{usuario?.email || 'email@example.com'}</Text>
       </View>
 
-      <Divider style={styles.divider} />
+      {/* Información Personal */}
+      <Card style={styles.card}>
+        <Card.Title title="Información Personal" />
+        <Card.Content>
+          <List.Item
+            title="Nombre de Usuario"
+            description={usuario?.nombre || 'Usuario'}
+            left={(props) => <List.Icon {...props} icon="account" />}
+          />
+          <Divider />
+          <List.Item
+            title="Correo Electrónico"
+            description={usuario?.email || 'email@example.com'}
+            left={(props) => <List.Icon {...props} icon="email" />}
+          />
+        </Card.Content>
+      </Card>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Información Personal</Text>
-        <List.Item
-          title="Nombre de Usuario"
-          description={usuario?.nombre || 'Usuario'}
-          left={(props) => <List.Icon {...props} icon="account" />}
-        />
-        <List.Item
-          title="Correo Electrónico"
-          description={usuario?.email || 'email@example.com'}
-          left={(props) => <List.Icon {...props} icon="email" />}
-        />
-      </View>
+      {/* Gamificación */}
+      <Card style={styles.card}>
+        <Card.Title title="Gamificación" />
+        <Card.Content>
+          <List.Item
+            title="Nivel"
+            description={`Nivel ${usuario?.nivel || 1}`}
+            left={(props) => <List.Icon {...props} icon="star" />}
+          />
+          <Divider />
+          <List.Item
+            title="Puntos"
+            description={`${usuario?.puntos || 0} puntos`}
+            left={(props) => <List.Icon {...props} icon="trophy" />}
+          />
+        </Card.Content>
+      </Card>
 
-      <Divider style={styles.divider} />
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Gamificación</Text>
-        <List.Item
-          title="Nivel"
-          description={`Nivel ${usuario?.nivel || 1}`}
-          left={(props) => <List.Icon {...props} icon="star" />}
-        />
-        <List.Item
-          title="Puntos"
-          description={`${usuario?.puntos || 0} puntos`}
-          left={(props) => <List.Icon {...props} icon="trophy" />}
-        />
-      </View>
-
-      <Divider style={styles.divider} />
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Configuraciones de la Cuenta</Text>
-        <Button
-          mode="contained"
-          onPress={() => Alert.alert("Función no implementada", "Próximamente podrás editar tu perfil.")}
-          style={styles.button}
-        >
-          Editar Perfil
-        </Button>
-        <Button
-          mode="outlined"
-          onPress={() => {
-            // Aquí podrías implementar el manejo de cerrar sesión
-            navigation.navigate('Login');
-          }}
-          style={styles.button}
-        >
-          Cerrar Sesión
-        </Button>
-      </View>
+      {/* Configuraciones de la Cuenta */}
+      <Card style={styles.card}>
+        <Card.Title title="Configuraciones de la Cuenta" />
+        <Card.Content>
+          <Button
+            mode="contained"
+            onPress={() => Alert.alert("Función no implementada", "Próximamente podrás editar tu perfil.")}
+            style={styles.button}
+          >
+            Editar Perfil
+          </Button>
+          <Button
+            mode="outlined"
+            onPress={() => {
+              // Aquí podrías implementar el manejo de cerrar sesión
+              navigation.navigate('Login');
+            }}
+            style={styles.button}
+          >
+            Cerrar Sesión
+          </Button>
+        </Card.Content>
+      </Card>
     </ScrollView>
   );
 };
@@ -83,38 +97,40 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#ffffff',
-    marginBottom: 10,
+    backgroundColor: '#4A90E2',
+    paddingBottom: 30,
+    marginBottom: 20,
+  },
+  headerBackground: {
+    width: '100%',
+    height: 120,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  avatar: {
+    marginTop: 70,
+    borderWidth: 3,
+    borderColor: '#fff',
   },
   username: {
     fontSize: 24,
     fontWeight: 'bold',
     marginTop: 10,
-    color: '#333',
+    color: '#fff',
   },
   email: {
     fontSize: 16,
-    color: '#777',
+    color: '#d1d1d1',
   },
-  divider: {
-    marginVertical: 10,
-  },
-  section: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#4A90E2',
+  card: {
+    marginHorizontal: 15,
+    marginBottom: 20,
+    borderRadius: 10,
+    elevation: 2,
   },
   button: {
-    marginTop: 15,
-    marginHorizontal: 10,
+    marginVertical: 10,
   },
 });
 
