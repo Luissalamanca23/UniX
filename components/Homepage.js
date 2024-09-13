@@ -5,6 +5,8 @@ import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import QRCode from 'react-native-qrcode-svg';
 import Modal from 'react-native-modal';
+import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 // Importar imágenes locales
 import img1 from '../assets/images.jpeg';
@@ -14,12 +16,15 @@ import img4 from '../assets/images-4.jpeg';
 import img5 from '../assets/images-5.jpeg';
 
 const Homepage = () => {
+  const route = useRoute();
+  const usuario = route.params?.usuario; // Obtener el usuario de la navegación
   const [progress, setProgress] = useState(0.13);
   const [searchQuery, setSearchQuery] = useState('');
   const [visible, setVisible] = useState(false);
   const [registeredEvents, setRegisteredEvents] = useState({});
   const [showQRModal, setShowQRModal] = useState(false);
   const [currentQR, setCurrentQR] = useState('');
+  const navigation = useNavigation();
 
   useEffect(() => {
     const timer = setTimeout(() => setProgress(0.64), 500);
@@ -81,15 +86,31 @@ const Homepage = () => {
             </TouchableOpacity>
           }
         >
-          <Menu.Item onPress={() => Alert.alert("Perfil", "Función no implementada")} title="Perfil" />
-          <Menu.Item onPress={() => Alert.alert("Configuración", "Función no implementada")} title="Configuración" />
+          {/* Mostrar el nombre del usuario en el menú de perfil */}
+          <View style={styles.menuHeader}>
+            <Image
+              source={{ uri: 'https://placehold.co/40x40' }}
+              style={styles.avatar}
+            />
+            <View>
+              <Text style={styles.username}>{usuario?.nombre || 'Usuario'}</Text>
+              <Text style={styles.email}>{usuario?.email || 'email@example.com'}</Text>
+            </View>
+          </View>
+
           <Divider />
-          <Menu.Item onPress={() => Alert.alert("Cerrar Sesión", "Función no implementada")} title="Cerrar sesión" />
+          <Menu.Item
+            onPress={() => navigation.navigate('Perfil', { usuario })}
+            title="Ver perfil"
+            icon="account"
+          />
+          <Menu.Item onPress={() => Alert.alert("Configuración", "Función no implementada")} title="Configuración" icon="cog" />
+          <Divider />
+          <Menu.Item onPress={() => Alert.alert("Cerrar Sesión", "Función no implementada")} title="Cerrar sesión" icon="logout" />
         </Menu>
       </Appbar.Header>
 
       <ScrollView contentContainerStyle={styles.container}>
-        
         {/* Featured Events */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Eventos Destacados</Text>
@@ -97,7 +118,6 @@ const Homepage = () => {
             {featuredEvents.map((event) => (
               <View style={styles.slide} key={event.id}>
                 <Card style={styles.eventCard}>
-                  {/* Ajuste de imagen para que se ajuste al contenedor */}
                   <Image source={event.image} style={styles.eventImage} resizeMode="contain" />
                   <Card.Content>
                     <Title>{event.title}</Title>
@@ -160,7 +180,7 @@ const Homepage = () => {
 
       {/* Gamification Elements */}
       <View style={styles.gamification}>
-        <Badge style={styles.badge}>Nivel 4 Luis S</Badge>
+        <Badge style={styles.badge}>Nivel 4 {usuario?.nombre}</Badge>
         <ProgressBar progress={progress} color="#007AFF" style={styles.progressBar} />
       </View>
 
