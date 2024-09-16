@@ -7,6 +7,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import Homepage from './components/Homepage';
 import LoginScreen from './components/LoginScreen';
 import PerfilScreen from './components/PerfilScreen';
+import CalendarScreen from './components/CalendarScreen';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ export default function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Home" component={Homepage} />
           <Stack.Screen name="Perfil" component={PerfilScreen} />
+          <Stack.Screen name="Calendario" component={CalendarScreen} />
           {/* Agrega más pantallas aquí según sea necesario */}
         </Stack.Navigator>
       </NavigationContainer>

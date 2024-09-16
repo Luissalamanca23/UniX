@@ -170,12 +170,16 @@ const Homepage = () => {
         {/* Quick Access Buttons */}
         <View style={styles.quickAccess}>
           {[
-            { title: 'Calendario', icon: 'calendar-month' },
+            { title: 'Calendario', icon: 'calendar-month', screen: 'Calendario' },
             { title: 'Tareas', icon: 'clipboard-list' },
             { title: 'Clubs', icon: 'account-group' },
             { title: 'Biblioteca', icon: 'bookshelf' },
           ].map((item, index) => (
-            <TouchableOpacity key={index} style={styles.quickAccessItem} onPress={() => Alert.alert(item.title, "Función no implementada")}>
+            <TouchableOpacity
+              key={index}
+              style={styles.quickAccessItem}
+              onPress={() => item.screen ? navigation.navigate(item.screen, { usuario }) : Alert.alert(item.title, "Función no implementada")}
+            >
               <Icon name={item.icon} size={24} color="#007AFF" />
               <Text style={styles.quickAccessText}>{item.title}</Text>
             </TouchableOpacity>
@@ -225,6 +229,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 15,
+    paddingBottom: 80,
   },
   header: {
     backgroundColor: '#FFFFFF',
@@ -268,13 +273,17 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   quickAccess: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 20,
+    position: 'absolute',
+    bottom: 0, // Siempre en la parte inferior de la pantalla
+    left: 0,
+    right: 0,
     backgroundColor: '#FFFFFF',
     padding: 15,
-    borderRadius: 10,
-    elevation: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
   },
   quickAccessItem: {
     alignItems: 'center',
