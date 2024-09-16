@@ -108,7 +108,7 @@ const LoginScreen = () => {
     if (usuario && usuario.contraseña === contraseña) {
       setMensajeAlerta('Inicio de sesión exitoso. ¡Bienvenido!');
       setMostrarAlerta(true);
-      setTimeout(() => {
+      global.setTimeout(() => {
         navigation.navigate('Home', { usuario });
       }, 1500);
     } else {

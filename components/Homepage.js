@@ -27,8 +27,8 @@ const Homepage = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const timer = setTimeout(() => setProgress(0.64), 500);
-    return () => clearTimeout(timer);
+    const timer = global.setTimeout(() => setProgress(0.64), 500);
+    return () => global.clearTimeout(timer);
   }, []);
 
   const onChangeSearch = query => setSearchQuery(query);
@@ -41,7 +41,7 @@ const Homepage = () => {
       return;
     }
 
-    setTimeout(() => {
+    global.setTimeout(() => {
       setRegisteredEvents(prev => ({ ...prev, [eventId]: true }));
       Alert.alert(
         "Registro Exitoso",
