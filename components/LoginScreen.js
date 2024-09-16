@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Modal, Portal, Provider, Snackbar, Button } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker'; // Importa Picker para selección
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -20,9 +21,46 @@ const LoginScreen = () => {
   const [nuevoEmail, setNuevoEmail] = useState('');
   const [nuevaContraseñaRegistro, setNuevaContraseñaRegistro] = useState('');
   const [usuariosData, setUsuariosData] = useState({ usuarios: [] });
+  const [institucionSeleccionada, setInstitucionSeleccionada] = useState(''); // Estado para la institución
+  const [sedeSeleccionada, setSedeSeleccionada] = useState(''); // Estado para la sede
+
+  const universidadesInstitutos = [
+    'Universidad de Chile',
+    'Pontificia Universidad Católica de Chile',
+    'Universidad de Santiago de Chile',
+    'Instituto Profesional Duoc UC',
+    'Universidad de Concepción',
+    'Universidad de Los Lagos',
+    'Universidad Austral de Chile',
+    'Instituto Profesional AIEP',
+    'Instituto Profesional Santo Tomás',
+    'Universidad San Sebastián',
+    'Universidad de Aconcagua',
+    'Universidad de Los Andes',
+    'Libre',
+  ];
+
+  // Sedes del Duoc UC
+  const sedesDuoc = [
+    'Puerto Montt',
+    'Plaza Vespucio',
+    'San Joaquín',
+    'Maipú',
+    'Viña del Mar',
+    'Antonio Varas',
+    'Melipilla',
+    'Puente Alto',
+    'Plaza Oeste',
+    'Concepción',
+    'San Carlos de Apoquindo',
+    'Alameda',
+    'San Bernardo',
+    'Sede Valparaíso',
+    'Sede San Andrés de Concepción',
+    // Agregar más sedes según sea necesario
+  ];
 
   useEffect(() => {
-    // Cargar usuarios al inicio
     cargarUsuarios();
   }, []);
 
@@ -32,7 +70,6 @@ const LoginScreen = () => {
       if (usuariosGuardados !== null) {
         setUsuariosData(JSON.parse(usuariosGuardados));
       } else {
-        // Inicializar con datos por defecto
         const usuariosPorDefecto = {
           usuarios: [
             { id: 101, nombre: 'Admin', email: 'luis@example.com', contraseña: '1234' },
@@ -72,7 +109,7 @@ const LoginScreen = () => {
       setMensajeAlerta('Inicio de sesión exitoso. ¡Bienvenido!');
       setMostrarAlerta(true);
       setTimeout(() => {
-        navigation.navigate('Home', { usuario }); // Pasar los datos del usuario al componente Home
+        navigation.navigate('Home', { usuario });
       }, 1500);
     } else {
       setMensajeAlerta('Nombre de usuario o contraseña incorrectos.');
@@ -102,6 +139,8 @@ const LoginScreen = () => {
       nombre: nuevoNombreUsuario,
       email: nuevoEmail,
       contraseña: nuevaContraseñaRegistro,
+      institucion: institucionSeleccionada,
+      sede: institucionSeleccionada === 'Instituto Profesional Duoc UC' ? sedeSeleccionada : '', // Añadir la sede seleccionada si corresponde
     };
 
     const nuevosUsuariosData = { ...usuariosData, usuarios: [...usuariosData.usuarios, nuevoUsuario] };
@@ -220,6 +259,30 @@ const LoginScreen = () => {
               placeholder="Contraseña"
               placeholderTextColor="#666"
             />
+
+            {/* Picker para seleccionar universidad o instituto */}
+            <Picker
+              selectedValue={institucionSeleccionada}
+              onValueChange={(itemValue) => setInstitucionSeleccionada(itemValue)}
+              style={styles.picker}
+            >
+              {universidadesInstitutos.map((institucion, index) => (
+                <Picker.Item key={index} label={institucion} value={institucion} />
+              ))}
+            </Picker>
+
+            {/* Mostrar Picker de sede solo si la institución seleccionada es "Instituto Profesional Duoc UC" */}
+            {institucionSeleccionada === 'Instituto Profesional Duoc UC' && (
+              <Picker
+                selectedValue={sedeSeleccionada}
+                onValueChange={(itemValue) => setSedeSeleccionada(itemValue)}
+                style={styles.picker}
+              >
+                {sedesDuoc.map((sede, index) => (
+                  <Picker.Item key={index} label={sede} value={sede} />
+                ))}
+              </Picker>
+            )}
 
             <Button mode="contained" onPress={manejarRegistroUsuario} style={styles.button}>
               Registrar Usuario
@@ -344,6 +407,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     color: '#333',
+  },
+  picker: {
+    marginBottom: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
   },
   button: {
     marginTop: 20,
