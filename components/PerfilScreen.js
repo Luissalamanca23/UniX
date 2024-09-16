@@ -1,5 +1,3 @@
-// src/components/PerfilScreen.js
-
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { Avatar, Divider, List, Button, Card } from 'react-native-paper';
@@ -41,6 +39,12 @@ const PerfilScreen = () => {
             title="Correo Electrónico"
             description={usuario?.email || 'email@example.com'}
             left={(props) => <List.Icon {...props} icon="email" />}
+          />
+          <Divider />
+          <List.Item
+            title="Universidad"
+            description={usuario?.universidad || 'No especificada'}
+            left={(props) => <List.Icon {...props} icon="school" />}
           />
         </Card.Content>
       </Card>

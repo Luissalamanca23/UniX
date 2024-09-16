@@ -59,12 +59,17 @@ const Homepage = () => {
   };
 
   const featuredEvents = [
-    { id: 1, title: "Festival de Primavera", date: "Mayo 15, 2023", image: img1 },
-    { id: 2, title: "Hackathon Universitario", date: "Junio 5, 2023", image: img2 },
-    { id: 3, title: "Feria de Ciencias", date: "Julio 10, 2023", image: img3 },
-    { id: 4, title: "Concierto de Verano", date: "Agosto 20, 2023", image: img4 },
-    { id: 5, title: "Maratón Universitaria", date: "Septiembre 3, 2023", image: img5 },
+    { id: 1, title: "Festival de Primavera", date: "Mayo 15, 2023", image: img1, universidad: "Universidad de Los Lagos" },
+    { id: 2, title: "Hackathon Universitario", date: "Junio 5, 2023", image: img2, universidad: "libre" },
+    { id: 3, title: "Feria de Ciencias", date: "Julio 10, 2023", image: img3, universidad: "Instituto AIEP" },
+    { id: 4, title: "Concierto de Verano", date: "Agosto 20, 2023", image: img4, universidad: "Universidad de Los Lagos" },
+    { id: 5, title: "Maratón Universitaria", date: "Septiembre 3, 2023", image: img5, universidad: "libre" },
   ];
+
+  // Filtrar eventos según la universidad del usuario o que sean "libre"
+  const filteredEvents = featuredEvents.filter(
+    event => event.universidad === usuario.universidad || event.universidad === "libre"
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -115,7 +120,7 @@ const Homepage = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Eventos Destacados</Text>
           <Swiper style={styles.wrapper} showsButtons loop autoplay>
-            {featuredEvents.map((event) => (
+            {filteredEvents.map((event) => (
               <View style={styles.slide} key={event.id}>
                 <Card style={styles.eventCard}>
                   <Image source={event.image} style={styles.eventImage} resizeMode="contain" />
