@@ -184,6 +184,33 @@ const LoginScreen = () => {
     }
   };
 
+  const detectarInstitucionPorCorreo = (email) => {
+    const dominio = email.split('@')[1];
+    if (!dominio) return '';
+
+    switch (dominio) {
+      case 'duocuc.cl':
+        return 'Instituto Profesional Duoc UC';
+      case 'uchile.cl':
+        return 'Universidad de Chile';
+      case 'uc.cl':
+        return 'Pontificia Universidad Católica de Chile';
+      case 'usach.cl':
+        return 'Universidad de Santiago de Chile';
+      // Añadir más dominios según sea necesario
+      default:
+        return '';
+    }
+  };
+
+  const manejarCambioEmail = (email) => {
+    setNuevoEmail(email);
+    const institucionDetectada = detectarInstitucionPorCorreo(email);
+    if (institucionDetectada) {
+      setInstitucionSeleccionada(institucionDetectada);
+    }
+  };
+
   const manejarRegistroUsuario = () => {
     if (nuevoNombreUsuario === '' || nuevoEmail === '' || nuevaContraseñaRegistro === '') {
       setMensajeAlerta('Por favor, completa todos los campos para registrarte.');
@@ -207,7 +234,7 @@ const LoginScreen = () => {
       email: nuevoEmail,
       contraseña: nuevaContraseñaRegistro,
       institucion: institucionSeleccionada,
-      sede: sedesUniversidades[institucionSeleccionada]?.includes(sedeSeleccionada) ? sedeSeleccionada : '',
+      sede: sedesUniversidades[institucionSeleccionada] ? sedeSeleccionada : '', // Añadir la sede seleccionada si corresponde
     };
 
     const nuevosUsuariosData = { ...usuariosData, usuarios: [...usuariosData.usuarios, nuevoUsuario] };
@@ -312,7 +339,7 @@ const LoginScreen = () => {
 
             <TextInput
               value={nuevoEmail}
-              onChangeText={setNuevoEmail}
+              onChangeText={manejarCambioEmail}
               style={styles.input}
               placeholder="Correo Electrónico"
               placeholderTextColor="#666"
