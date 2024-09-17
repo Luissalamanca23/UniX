@@ -42,10 +42,21 @@ const PerfilScreen = () => {
           />
           <Divider />
           <List.Item
-            title="Universidad"
-            description={usuario?.universidad || 'No especificada'}
+            title="Institución"
+            description={usuario?.institucion || 'No especificada'}
             left={(props) => <List.Icon {...props} icon="school" />}
           />
+          <Divider />
+          {usuario?.institucion === 'Instituto Profesional Duoc UC' && (
+            <>
+              <List.Item
+                title="Sede"
+                description={usuario?.sede || 'No especificada'}
+                left={(props) => <List.Icon {...props} icon="map-marker" />}
+              />
+              <Divider />
+            </>
+          )}
         </Card.Content>
       </Card>
 

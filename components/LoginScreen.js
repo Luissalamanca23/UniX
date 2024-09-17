@@ -72,8 +72,8 @@ const LoginScreen = () => {
       } else {
         const usuariosPorDefecto = {
           usuarios: [
-            { id: 101, nombre: 'Admin', email: 'luis@example.com', contraseña: '1234' },
-            { id: 102, nombre: 'Ana M', email: 'ana@example.com', contraseña: '5678' },
+            { id: 101, nombre: 'Admin', email: 'luis@example.com', contraseña: '1234', institucion: 'Instituto Profesional Duoc UC', sede: 'Maipú' },
+            { id: 102, nombre: 'Ana M', email: 'ana@example.com', contraseña: '5678', institucion: 'Universidad de Chile', sede: '' },
           ],
         };
         setUsuariosData(usuariosPorDefecto);
