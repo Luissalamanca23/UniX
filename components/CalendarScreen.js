@@ -16,11 +16,13 @@ const CalendarScreen = () => {
 
   // Eventos de ejemplo - en una aplicación real, esto podría venir de una API o del estado global
   const allEvents = [
-    { id: 1, title: "Festival de Primavera", date: "2023-05-15", universidad: "Universidad de Los Lagos" },
-    { id: 2, title: "Hackathon Universitario", date: "2023-06-05", universidad: "libre" },
-    { id: 3, title: "Feria de Ciencias", date: "2023-07-10", universidad: "Instituto AIEP" },
-    { id: 4, title: "Concierto de Verano", date: "2023-08-20", universidad: "Universidad de Los Lagos" },
-    { id: 5, title: "Maratón Universitaria", date: "2023-09-03", universidad: "libre" },
+    { id: 1, title: "Festival de Primavera", date: "2024-09-03", universidad: "Instituto Profesional Duoc UC" },
+    { id: 2, title: "Hackathon Universitario", date: "2024-09-03", universidad: "libre" },
+    { id: 3, title: "Feria de Ciencias", date: "2024-09-03", universidad: "Instituto AIEP" },
+    { id: 4, title: "Concierto de Verano", date: "2024-09-03", universidad: "Instituto Profesional Duoc UC" },
+    { id: 5, title: "Maratón Universitaria", date: "2024-09-03", universidad: "libre" },
+    { id: 6, title: "Fiesta de Bienvenida", date: "2024-09-03", universidad: "Universidad de Los Lagos" },
+    { id: 7, title: "Fiesta de Fin de Año", date: "2024-09-03", universidad: "Instituto AIEP" },
   ];
 
   useEffect(() => {
@@ -40,11 +42,16 @@ const CalendarScreen = () => {
   };
 
   const connectCalendar = async () => {
-    const authStatus = await CalendarEvents.requestPermissions();
-    if (authStatus === 'authorized') {
-      Alert.alert("Permiso concedido", "Ahora puedes sincronizar los eventos con tu calendario.");
-    } else {
-      Alert.alert("Permiso denegado", "No se pudo acceder a tu calendario.");
+    try {
+      const authStatus = await CalendarEvents.requestPermissions();
+      if (authStatus === 'authorized') {
+        Alert.alert("Permiso concedido", "Ahora puedes sincronizar los eventos con tu calendario.");
+      } else {
+        Alert.alert("Permiso denegado", "No se pudo acceder a tu calendario.");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió un error al intentar acceder al calendario.");
+      console.error("Error al solicitar permisos de calendario:", error); // Asegúrate de imprimir el error para depuración
     }
   };
 
