@@ -124,3 +124,5 @@ package-lock.json
 yarn.lock
 .env
 package-lock.json
+ios/Unyx.xcodeproj/project.pbxproj
+ios/Unyx.xcodeproj/xcshareddata/xcschemes/Unyx.xcscheme
