@@ -140,7 +140,7 @@ const Homepage = () => {
                     <Image source={event.image} style={styles.eventImage} resizeMode="contain" />
                     <Card.Content>
                       <Title>{event.title}</Title>
-                      <Paragraph>{event.date}</Paragraph>
+                      <Paragraph>{event.dateFormatted}</Paragraph>
                     </Card.Content>
                     <Card.Actions>
                       <TouchableOpacity
