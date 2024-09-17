@@ -8,11 +8,7 @@ import Modal from 'react-native-modal';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
-import img1 from '../assets/images.jpeg';
-import img2 from '../assets/images-2.jpeg';
-import img3 from '../assets/images-3.jpeg';
-import img4 from '../assets/images-4.jpeg';
-import img5 from '../assets/images-5.jpeg';
+import featuredEvents from '../data/eventsData';
 
 const Homepage = () => {
   const route = useRoute();
@@ -61,44 +57,6 @@ const Homepage = () => {
     setShowQRModal(false);
   };
 
-  const featuredEvents = [
-    // Universidad de Los Lagos
-    { id: 1, title: "Festival de Primavera", date: "Mayo 15, 2023", image: img1, universidad: "Universidad de Los Lagos", carrera: "Informática", sede: "Campus Osorno" },
-    { id: 2, title: "Concierto de Verano", date: "Agosto 20, 2023", image: img4, universidad: "Universidad de Los Lagos", carrera: "Construcción", sede: "Campus Puerto Montt" },
-    { id: 3, title: "Seminario de Ciberseguridad", date: "Octubre 25, 2023", image: img1, universidad: "Universidad de Los Lagos", carrera: "Informática", sede: "Campus Chinquihue" },
-    
-    // Instituto AIEP
-    { id: 4, title: "Feria de Ciencias", date: "Julio 10, 2023", image: img3, universidad: "Instituto AIEP", carrera: "Salud", sede: "Sede Providencia" },
-    { id: 5, title: "Taller de Emergencias Médicas", date: "Noviembre 11, 2023", image: img3, universidad: "Instituto AIEP", carrera: "Salud", sede: "Sede Concepción" },
-    { id: 6, title: "Jornada de Actualización en Enfermería", date: "Diciembre 5, 2023", image: img4, universidad: "Instituto AIEP", carrera: "Salud", sede: "Sede Bellavista" },
-    
-    // Instituto Profesional Duoc UC
-    { id: 7, title: "Fiesta de Bienvenida", date: "Octubre 12, 2023", image: img1, universidad: "Instituto Profesional Duoc UC", carrera: "Construcción", sede: "Sede San Joaquín" },
-    { id: 8, title: "Fiesta de Fin de Año", date: "Diciembre 31, 2023", image: img2, universidad: "Instituto Profesional Duoc UC", carrera: "Informática", sede: "Sede Antonio Varas" },
-    { id: 9, title: "Torneo de Innovación y Tecnología", date: "Marzo 5, 2024", image: img2, universidad: "Instituto Profesional Duoc UC", carrera: "Informática", sede: "Sede Plaza Oeste" },
-    
-    // Universidad de Chile
-    { id: 10, title: "Congreso de Ciencias Políticas", date: "Abril 4, 2023", image: img5, universidad: "Universidad de Chile", carrera: "Ciencias Políticas", sede: "Campus Juan Gómez Millas" },
-    { id: 11, title: "Feria del Libro Universitario", date: "Junio 16, 2023", image: img1, universidad: "Universidad de Chile", carrera: "Literatura", sede: "Campus Andrés Bello" },
-    { id: 12, title: "Hackathon de Inteligencia Artificial", date: "Agosto 12, 2023", image: img2, universidad: "Universidad de Chile", carrera: "Informática", sede: "Facultad de Ciencias Físicas y Matemáticas" },
-  
-    // Pontificia Universidad Católica de Chile
-    { id: 13, title: "Conferencia de Economía y Negocios", date: "Mayo 20, 2023", image: img4, universidad: "Pontificia Universidad Católica de Chile", carrera: "Negocios", sede: "Campus San Joaquín" },
-    { id: 14, title: "Feria de Arte y Cultura", date: "Septiembre 14, 2023", image: img3, universidad: "Pontificia Universidad Católica de Chile", carrera: "Arte", sede: "Campus Lo Contador" },
-    { id: 15, title: "Simposio de Energías Renovables", date: "Noviembre 23, 2023", image: img1, universidad: "Pontificia Universidad Católica de Chile", carrera: "Construcción", sede: "Campus San Joaquín" },
-  
-    // Universidad de Concepción
-    { id: 16, title: "Semana de la Ingeniería", date: "Octubre 2, 2023", image: img2, universidad: "Universidad de Concepción", carrera: "Informática", sede: "Campus Concepción" },
-    { id: 17, title: "Ciclo de Cine Documental", date: "Julio 18, 2023", image: img5, universidad: "Universidad de Concepción", carrera: "Comunicación", sede: "Campus Chillán" },
-    { id: 18, title: "Feria de Emprendimiento e Innovación", date: "Diciembre 15, 2023", image: img4, universidad: "Universidad de Concepción", carrera: "Negocios", sede: "Campus Los Ángeles" },
-  
-    // Libre (Abiertos a todos)
-    { id: 19, title: "Hackathon Universitario", date: "Junio 5, 2023", image: img2, universidad: "libre", carrera: "Informática" },
-    { id: 20, title: "Maratón Universitaria", date: "Septiembre 3, 2023", image: img5, universidad: "libre", carrera: "Salud" },
-    { id: 21, title: "Festival de Cortometrajes", date: "Abril 28, 2023", image: img1, universidad: "libre", carrera: "Arte" },
-    { id: 22, title: "Competencia de Robótica", date: "Mayo 30, 2023", image: img3, universidad: "libre", carrera: "Informática" },
-    { id: 23, title: "Torneo de Debate Interuniversitario", date: "Octubre 8, 2023", image: img4, universidad: "libre", carrera: "Ciencias Políticas" },
-  ];
 
   // Filtrar eventos según las categorías seleccionadas y la universidad del usuario
   const filteredEvents = featuredEvents.filter(
