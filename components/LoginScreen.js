@@ -37,28 +37,95 @@ const LoginScreen = () => {
     'Universidad San Sebastián',
     'Universidad de Aconcagua',
     'Universidad de Los Andes',
-    'Libre',
   ];
 
-  // Sedes del Duoc UC
-  const sedesDuoc = [
-    'Puerto Montt',
-    'Plaza Vespucio',
-    'San Joaquín',
-    'Maipú',
-    'Viña del Mar',
-    'Antonio Varas',
-    'Melipilla',
-    'Puente Alto',
-    'Plaza Oeste',
-    'Concepción',
-    'San Carlos de Apoquindo',
-    'Alameda',
-    'San Bernardo',
-    'Sede Valparaíso',
-    'Sede San Andrés de Concepción',
-    // Agregar más sedes según sea necesario
-  ];
+  // Sedes de las universidades e institutos
+  const sedesUniversidades = {
+    'Universidad de Chile': [
+      'Campus Juan Gómez Millas',
+      'Campus Andrés Bello',
+      'Campus Beauchef',
+      'Facultad de Medicina',
+      'Facultad de Derecho',
+    ],
+    'Pontificia Universidad Católica de Chile': [
+      'Campus San Joaquín',
+      'Campus Casa Central',
+      'Campus Lo Contador',
+      'Campus Oriente',
+      'Campus Villarrica',
+    ],
+    'Universidad de Santiago de Chile': [
+      'Campus Central',
+      'Facultad Tecnológica',
+      'Facultad de Ingeniería',
+      'Escuela de Artes y Oficios (EAO)',
+      'Facultad de Humanidades',
+    ],
+    'Instituto Profesional Duoc UC': [
+      'Puerto Montt',
+      'Plaza Vespucio',
+      'San Joaquín',
+      'Maipú',
+      'Viña del Mar',
+      'Antonio Varas',
+      'Melipilla',
+      'Puente Alto',
+      'Plaza Oeste',
+      'Concepción',
+      'San Carlos de Apoquindo',
+      'Alameda',
+      'San Bernardo',
+      'Sede Valparaíso',
+      'Sede San Andrés de Concepción',
+    ],
+    'Universidad de Concepción': [
+      'Campus Concepción',
+      'Campus Chillán',
+      'Campus Los Ángeles',
+    ],
+    'Universidad de Los Lagos': [
+      'Campus Osorno',
+      'Campus Puerto Montt',
+      'Campus Chinquihue',
+    ],
+    'Universidad Austral de Chile': [
+      'Campus Isla Teja',
+      'Campus Miraflores',
+      'Campus Patagonia',
+      'Campus Puerto Montt',
+    ],
+    'Instituto Profesional AIEP': [
+      'Sede Providencia',
+      'Sede Bellavista',
+      'Sede Concepción',
+      'Sede Rancagua',
+      'Sede Antofagasta',
+      'Sede Viña del Mar',
+    ],
+    'Instituto Profesional Santo Tomás': [
+      'Sede Santiago Centro',
+      'Sede Talca',
+      'Sede La Serena',
+      'Sede Chillán',
+      'Sede Temuco',
+      'Sede Valdivia',
+    ],
+    'Universidad San Sebastián': [
+      'Sede Santiago',
+      'Sede Concepción',
+      'Sede Valdivia',
+      'Sede Puerto Montt',
+    ],
+    'Universidad de Aconcagua': [
+      'Sede Santiago',
+      'Sede Rancagua',
+      'Sede San Felipe',
+    ],
+    'Universidad de Los Andes': [
+      'Campus San Carlos de Apoquindo',
+    ],
+  };
 
   useEffect(() => {
     cargarUsuarios();
@@ -108,7 +175,7 @@ const LoginScreen = () => {
     if (usuario && usuario.contraseña === contraseña) {
       setMensajeAlerta('Inicio de sesión exitoso. ¡Bienvenido!');
       setMostrarAlerta(true);
-      global.setTimeout(() => {
+      setTimeout(() => {
         navigation.navigate('Home', { usuario });
       }, 1500);
     } else {
@@ -140,7 +207,7 @@ const LoginScreen = () => {
       email: nuevoEmail,
       contraseña: nuevaContraseñaRegistro,
       institucion: institucionSeleccionada,
-      sede: institucionSeleccionada === 'Instituto Profesional Duoc UC' ? sedeSeleccionada : '', // Añadir la sede seleccionada si corresponde
+      sede: sedesUniversidades[institucionSeleccionada]?.includes(sedeSeleccionada) ? sedeSeleccionada : '',
     };
 
     const nuevosUsuariosData = { ...usuariosData, usuarios: [...usuariosData.usuarios, nuevoUsuario] };
@@ -271,14 +338,14 @@ const LoginScreen = () => {
               ))}
             </Picker>
 
-            {/* Mostrar Picker de sede solo si la institución seleccionada es "Instituto Profesional Duoc UC" */}
-            {institucionSeleccionada === 'Instituto Profesional Duoc UC' && (
+            {/* Mostrar Picker de sede solo si la institución seleccionada tiene sedes */}
+            {sedesUniversidades[institucionSeleccionada] && (
               <Picker
                 selectedValue={sedeSeleccionada}
                 onValueChange={(itemValue) => setSedeSeleccionada(itemValue)}
                 style={styles.picker}
               >
-                {sedesDuoc.map((sede, index) => (
+                {sedesUniversidades[institucionSeleccionada].map((sede, index) => (
                   <Picker.Item key={index} label={sede} value={sede} />
                 ))}
               </Picker>
