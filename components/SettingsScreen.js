@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch, Alert, TouchableOpacity } from 'react-native';
 import { Button, Divider, List, Modal, Portal } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native'; // Importar useNavigation
 
-const Settings = ({ usuario }) => {
+const Settings = ({ route }) => {
+  const navigation = useNavigation(); // Utilizar useNavigation
+  const usuario = route.params?.usuario; // Obtener el usuario de los parámetros de navegación
+
   const [selectedCategories, setSelectedCategories] = useState([]); // Estado para categorías seleccionadas
   const [notificationsEnabled, setNotificationsEnabled] = useState(true); // Estado para las notificaciones
   const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de solicitud de cambio
@@ -36,6 +40,11 @@ const Settings = ({ usuario }) => {
       'Te enviaremos un correo para revisar tu solicitud de cambio de sede o institución.',
     );
     setShowModal(false);
+  };
+
+  const handleSaveCategories = () => {
+    // Navegar de regreso a la pantalla principal con las nuevas categorías seleccionadas
+    navigation.navigate('Home', { usuario, selectedCategories });
   };
 
   return (
@@ -72,6 +81,9 @@ const Settings = ({ usuario }) => {
             </TouchableOpacity>
           ))}
         </View>
+        <Button mode="contained" onPress={handleSaveCategories} style={styles.modalButton}>
+          Guardar Categorías
+        </Button>
       </View>
 
       {/* Sección de Notificaciones */}

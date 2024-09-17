@@ -8,7 +8,6 @@ import Modal from 'react-native-modal';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
-// Importar imágenes locales
 import img1 from '../assets/images.jpeg';
 import img2 from '../assets/images-2.jpeg';
 import img3 from '../assets/images-3.jpeg';
@@ -17,18 +16,18 @@ import img5 from '../assets/images-5.jpeg';
 
 const Homepage = () => {
   const route = useRoute();
-  const usuario = route.params?.usuario; // Obtener el usuario de la navegación
+  const navigation = useNavigation();
+  const usuario = route.params?.usuario;
+  const selectedCategories = route.params?.selectedCategories || []; // Obtener categorías seleccionadas
   const [progress, setProgress] = useState(0.13);
   const [searchQuery, setSearchQuery] = useState('');
   const [visible, setVisible] = useState(false);
   const [registeredEvents, setRegisteredEvents] = useState({});
   const [showQRModal, setShowQRModal] = useState(false);
   const [currentQR, setCurrentQR] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState(''); // Nuevo estado para el filtro de gustos/carreras
-  const [isQuickAccessVisible, setIsQuickAccessVisible] = useState(true); // Estado de visibilidad del quickAccess
-  const [isFilterVisible, setIsFilterVisible] = useState(true); // Estado de visibilidad del filtro
-  const navigation = useNavigation();
-  const scrollOffsetY = useRef(new Animated.Value(0)).current; // Referencia para la posición de scroll
+  const [isQuickAccessVisible, setIsQuickAccessVisible] = useState(true);
+  const [isFilterVisible, setIsFilterVisible] = useState(true);
+  const scrollOffsetY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const timer = global.setTimeout(() => setProgress(0.64), 500);
@@ -101,10 +100,11 @@ const Homepage = () => {
     { id: 23, title: "Torneo de Debate Interuniversitario", date: "Octubre 8, 2023", image: img4, universidad: "libre", carrera: "Ciencias Políticas" },
   ];
 
-  // Filtrar eventos según la universidad o institución del usuario, que sean "libre", o que coincidan con el filtro seleccionado
+  // Filtrar eventos según las categorías seleccionadas y la universidad del usuario
   const filteredEvents = featuredEvents.filter(
-    event => (event.universidad === usuario?.institucion || event.universidad === "libre") &&
-             (selectedFilter === '' || event.carrera === selectedFilter)
+    event =>
+      (event.universidad === usuario?.institucion || event.universidad === "libre") &&
+      (selectedCategories.length === 0 || selectedCategories.includes(event.carrera))
   );
 
   return (
@@ -127,7 +127,6 @@ const Homepage = () => {
             </TouchableOpacity>
           }
         >
-          {/* Mostrar el nombre del usuario en el menú de perfil */}
           <View style={styles.menuHeader}>
             <Image
               source={{ uri: 'https://placehold.co/40x40' }}
@@ -146,7 +145,7 @@ const Homepage = () => {
             icon="account"
           />
           <Menu.Item
-            onPress={() => navigation.navigate('Settings', { usuario })}
+            onPress={() => navigation.navigate('Settings', { usuario, currentCategories: selectedCategories })}
             title="Configuración"
             icon="cog"
           />
@@ -167,8 +166,8 @@ const Homepage = () => {
               useNativeDriver: false,
               listener: (event) => {
                 const offsetY = event.nativeEvent.contentOffset.y;
-                setIsQuickAccessVisible(offsetY <= 0); // Mostrar quickAccess solo cuando se llegue a la parte superior
-                setIsFilterVisible(offsetY <= 0); // Mostrar filtro solo cuando se llegue a la parte superior
+                setIsQuickAccessVisible(offsetY <= 0);
+                setIsFilterVisible(offsetY <= 0);
               },
             }
           )}
@@ -245,7 +244,6 @@ const Homepage = () => {
         ))}
       </View>
       
-
       {/* Gamification Elements */}
       <View style={styles.gamification}>
         <Badge style={styles.badge}>Nivel 4 {usuario?.nombre}</Badge>
@@ -273,6 +271,7 @@ const Homepage = () => {
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   safeArea: {
