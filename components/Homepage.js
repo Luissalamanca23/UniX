@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Image } from 'react-native';
-import { Avatar, Badge, FAB, ProgressBar, Card, Title, Paragraph, Appbar, Searchbar, Menu, Divider } from 'react-native-paper';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Image, Animated } from 'react-native';
+import { Avatar, Badge, FAB, ProgressBar, Card, Title, Paragraph, Appbar, Searchbar, Menu, Divider, Button } from 'react-native-paper';
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import QRCode from 'react-native-qrcode-svg';
@@ -24,7 +24,11 @@ const Homepage = () => {
   const [registeredEvents, setRegisteredEvents] = useState({});
   const [showQRModal, setShowQRModal] = useState(false);
   const [currentQR, setCurrentQR] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState(''); // Nuevo estado para el filtro de gustos/carreras
+  const [isQuickAccessVisible, setIsQuickAccessVisible] = useState(true); // Estado de visibilidad del quickAccess
+  const [isFilterVisible, setIsFilterVisible] = useState(true); // Estado de visibilidad del filtro
   const navigation = useNavigation();
+  const scrollOffsetY = useRef(new Animated.Value(0)).current; // Referencia para la posición de scroll
 
   useEffect(() => {
     const timer = global.setTimeout(() => setProgress(0.64), 500);
@@ -59,16 +63,19 @@ const Homepage = () => {
   };
 
   const featuredEvents = [
-    { id: 1, title: "Festival de Primavera", date: "Mayo 15, 2023", image: img1, universidad: "Universidad de Los Lagos" },
-    { id: 2, title: "Hackathon Universitario", date: "Junio 5, 2023", image: img2, universidad: "libre" },
-    { id: 3, title: "Feria de Ciencias", date: "Julio 10, 2023", image: img3, universidad: "Instituto AIEP" },
-    { id: 4, title: "Concierto de Verano", date: "Agosto 20, 2023", image: img4, universidad: "Universidad de Los Lagos" },
-    { id: 5, title: "Maratón Universitaria", date: "Septiembre 3, 2023", image: img5, universidad: "libre" },
+    { id: 1, title: "Festival de Primavera", date: "Mayo 15, 2023", image: img1, universidad: "Universidad de Los Lagos", carrera: "Informática" },
+    { id: 2, title: "Hackathon Universitario", date: "Junio 5, 2023", image: img2, universidad: "libre", carrera: "Informática" },
+    { id: 3, title: "Feria de Ciencias", date: "Julio 10, 2023", image: img3, universidad: "Instituto AIEP", carrera: "Salud" },
+    { id: 4, title: "Concierto de Verano", date: "Agosto 20, 2023", image: img4, universidad: "Universidad de Los Lagos", carrera: "Construcción" },
+    { id: 5, title: "Maratón Universitaria", date: "Septiembre 3, 2023", image: img5, universidad: "libre", carrera: "Salud" },
+    { id: 6, title: "Fiesta de Bienvenida", date: "Octubre 12, 2023", image: img1, universidad: "Instituto Profesional Duoc UC", carrera: "Construcción" },
+    { id: 7, title: "Fiesta de Fin de Año", date: "Diciembre 31, 2023", image: img2, universidad: "Instituto Profesional Duoc UC", carrera: "Informática" },
   ];
 
-  // Filtrar eventos según la universidad del usuario o que sean "libre"
+  // Filtrar eventos según la universidad o institución del usuario, que sean "libre", o que coincidan con el filtro seleccionado
   const filteredEvents = featuredEvents.filter(
-    event => event.universidad === usuario.universidad || event.universidad === "libre"
+    event => (event.universidad === usuario?.institucion || event.universidad === "libre") &&
+             (selectedFilter === '' || event.carrera === selectedFilter)
   );
 
   return (
@@ -115,89 +122,120 @@ const Homepage = () => {
         </Menu>
       </Appbar.Header>
 
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Featured Events */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Eventos Destacados</Text>
-          <Swiper style={styles.wrapper} showsButtons loop autoplay>
-            {filteredEvents.map((event) => (
-              <View style={styles.slide} key={event.id}>
-                <Card style={styles.eventCard}>
-                  <Image source={event.image} style={styles.eventImage} resizeMode="contain" />
-                  <Card.Content>
-                    <Title>{event.title}</Title>
-                    <Paragraph>{event.date}</Paragraph>
-                  </Card.Content>
-                  <Card.Actions>
-                    <TouchableOpacity
-                      style={[styles.button, registeredEvents[event.id] ? styles.registeredButton : {}]}
-                      onPress={() => registerForEvent(event.id)}
-                    >
-                      <Text style={styles.buttonText}>
-                        {registeredEvents[event.id] ? "Registrado" : "Unirse al Evento"}
-                      </Text>
-                    </TouchableOpacity>
-                  </Card.Actions>
-                </Card>
-              </View>
+      {/* Contenedor que envuelve el ScrollView y el quickAccess */}
+      <View style={styles.contentContainer}>
+        {/* Filtros por gustos/carreras */}
+        {isFilterVisible && ( // Mostrar solo si isFilterVisible es true
+          <View style={styles.filterContainer}>
+            <Text style={styles.sectionTitle}>Filtrar por Intereses:</Text>
+            <View style={styles.filterButtons}>
+              {['Informática', 'Salud', 'Construcción'].map((filtro) => (
+                <Button
+                  key={filtro}
+                  mode={selectedFilter === filtro ? 'contained' : 'outlined'}
+                  onPress={() => setSelectedFilter(selectedFilter === filtro ? '' : filtro)}
+                  style={styles.filterButton}
+                >
+                  {filtro}
+                </Button>
+              ))}
+            </View>
+          </View>
+        )}
+
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          scrollEventThrottle={16}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollOffsetY } } }],
+            {
+              useNativeDriver: false,
+              listener: (event) => {
+                const offsetY = event.nativeEvent.contentOffset.y;
+                setIsQuickAccessVisible(offsetY <= 0); // Mostrar quickAccess solo cuando se llegue a la parte superior
+                setIsFilterVisible(offsetY <= 0); // Mostrar filtro solo cuando se llegue a la parte superior
+              },
+            }
+          )}
+        >
+          {/* Featured Events */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Eventos Destacados</Text>
+            <Swiper style={styles.wrapper} showsButtons loop autoplay>
+              {filteredEvents.map((event) => (
+                <View style={styles.slide} key={event.id}>
+                  <Card style={styles.eventCard}>
+                    <Image source={event.image} style={styles.eventImage} resizeMode="contain" />
+                    <Card.Content>
+                      <Title>{event.title}</Title>
+                      <Paragraph>{event.date}</Paragraph>
+                    </Card.Content>
+                    <Card.Actions>
+                      <TouchableOpacity
+                        style={[styles.button, registeredEvents[event.id] ? styles.registeredButton : {}]}
+                        onPress={() => registerForEvent(event.id)}
+                      >
+                        <Text style={styles.buttonText}>
+                          {registeredEvents[event.id] ? "Registrado" : "Unirse al Evento"}
+                        </Text>
+                      </TouchableOpacity>
+                    </Card.Actions>
+                  </Card>
+                </View>
+              ))}
+            </Swiper>
+          </View>
+
+          {/* Main Feed */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Noticias Universitarias</Text>
+            {[1, 2, 3].map((post) => (
+              <Card key={post} style={styles.card}>
+                <Card.Title
+                  title={`Actualización de Noticias ${post}`}
+                  subtitle={`Abril ${post + 14}, 2023`}
+                  left={(props) => <Avatar.Icon {...props} icon="newspaper" />}
+                />
+                <Card.Cover source={{ uri: `https://placehold.co/300x200?text=Noticia+${post}` }} />
+                <Card.Content>
+                  <Paragraph>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Paragraph>
+                </Card.Content>
+                <Card.Actions>
+                  <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Ver Más", "Función no implementada")}>
+                    <Text style={styles.buttonText}>Ver Más</Text>
+                  </TouchableOpacity>
+                </Card.Actions>
+              </Card>
             ))}
-          </Swiper>
-        </View>
+          </View>
+        </ScrollView>
+      </View>
 
-        {/* Main Feed */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Noticias Universitarias</Text>
-          {[1, 2, 3].map((post) => (
-            <Card key={post} style={styles.card}>
-              <Card.Title
-                title={`Actualización de Noticias ${post}`}
-                subtitle={`Abril ${post + 14}, 2023`}
-                left={(props) => <Avatar.Icon {...props} icon="newspaper" />}
-              />
-              <Card.Cover source={{ uri: `https://placehold.co/300x200?text=Noticia+${post}` }} />
-              <Card.Content>
-                <Paragraph>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Paragraph>
-              </Card.Content>
-              <Card.Actions>
-                <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Ver Más", "Función no implementada")}>
-                  <Text style={styles.buttonText}>Ver Más</Text>
-                </TouchableOpacity>
-              </Card.Actions>
-            </Card>
-          ))}
-        </View>
-
-        {/* Quick Access Buttons */}
-        <View style={styles.quickAccess}>
-          {[
-            { title: 'Calendario', icon: 'calendar-month', screen: 'Calendario' },
-            { title: 'Tareas', icon: 'clipboard-list' },
-            { title: 'Clubs', icon: 'account-group' },
-            { title: 'Biblioteca', icon: 'bookshelf' },
-          ].map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.quickAccessItem}
-              onPress={() => item.screen ? navigation.navigate(item.screen, { usuario }) : Alert.alert(item.title, "Función no implementada")}
-            >
-              <Icon name={item.icon} size={24} color="#007AFF" />
-              <Text style={styles.quickAccessText}>{item.title}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
+      {/* Quick Access Buttons */}
+      <View style={styles.quickAccess}>
+        {[
+          { title: 'Calendario', icon: 'calendar-month', screen: 'Calendario' },
+          { title: 'Tareas', icon: 'clipboard-list' },
+          { title: 'Clubs', icon: 'account-group' },
+          { title: 'Biblioteca', icon: 'bookshelf' },
+        ].map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.quickAccessItem}
+            onPress={() => item.screen ? navigation.navigate(item.screen, { usuario }) : Alert.alert(item.title, "Función no implementada")}
+          >
+             <Icon name={item.icon} size={24} color="#007AFF" />
+             <Text style={styles.quickAccessText}>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      
 
       {/* Gamification Elements */}
       <View style={styles.gamification}>
         <Badge style={styles.badge}>Nivel 4 {usuario?.nombre}</Badge>
         <ProgressBar progress={progress} color="#007AFF" style={styles.progressBar} />
       </View>
-
-      <FAB
-        style={styles.fab}
-        icon="plus"
-        onPress={() => Alert.alert("Añadir", "Función no implementada")}
-      />
 
       {/* QR Code Modal */}
       <Modal isVisible={showQRModal} onBackdropPress={() => setShowQRModal(false)}>
@@ -226,10 +264,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F0F0F0',
   },
-  container: {
-    flexGrow: 1,
-    padding: 15,
-    paddingBottom: 80,
+  contentContainer: {
+    flex: 1, // Hace que el contenedor principal ocupe todo el espacio
+    position: 'relative', // Permite que quickAccess se posicione de manera absoluta
+  },
+  scrollContainer: {
+    paddingBottom: 80, // Asegura que el contenido de scroll no se sobreponga a quickAccess
   },
   header: {
     backgroundColor: '#FFFFFF',
@@ -252,6 +292,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#333',
+  },
+  filterContainer: {
+    padding: 10,
+    backgroundColor: '#FFF',
+    marginBottom: 15,
+  },
+  filterButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  filterButton: {
+    marginHorizontal: 5,
   },
   wrapper: {
     height: 300,
@@ -291,13 +343,6 @@ const styles = StyleSheet.create({
   quickAccessText: {
     marginTop: 5,
     fontSize: 12,
-  },
-  fab: {
-    position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#007AFF',
   },
   gamification: {
     position: 'absolute',
