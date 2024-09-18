@@ -9,6 +9,7 @@ import LoginScreen from './components/LoginScreen';
 import PerfilScreen from './components/PerfilScreen';
 import CalendarScreen from './components/CalendarScreen';
 import Settings from './components/SettingsScreen';
+import Events from './components/EventsScreen';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ export default function App() {
         >
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Home" component={Homepage} />
+          <Stack.Screen name="Eventos" component={Events} />
           <Stack.Screen name="Perfil" component={PerfilScreen} />
           <Stack.Screen name="Settings" component={Settings} options={{ title: 'Configuración' }} />
           <Stack.Screen name="Calendario" component={CalendarScreen} />
