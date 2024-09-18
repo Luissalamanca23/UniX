@@ -69,12 +69,7 @@ const Homepage = () => {
     <SafeAreaView style={styles.safeArea}>
       <Appbar.Header style={styles.header}>
         <Appbar.Content title="Unyx" titleStyle={styles.headerTitle} />
-        <Searchbar
-          placeholder="Buscar"
-          onChangeText={onChangeSearch}
-          value={searchQuery}
-          style={styles.searchbar}
-        />
+        
         <Appbar.Action icon="bell-outline" onPress={() => Alert.alert("Notificaciones", "No hay nuevas notificaciones")} />
         <Menu
           visible={visible}
