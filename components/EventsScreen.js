@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Image } fr
 import { Card, Title, Paragraph} from 'react-native-paper';
 import QRCode from 'react-native-qrcode-svg';
 import Modal from 'react-native-modal';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import HeaderBar from './HeaderBar'; 
 import QuickAccessBar from './QuickAccessBar';
 
@@ -12,8 +12,8 @@ import featuredEvents from '../data/eventsData';
 const EventsScreen = () => {
   const route = useRoute();
   const usuario = route.params?.usuario;
+  const [progress, setProgress] = useState(0.13);
   const selectedCategories = route.params?.selectedCategories || [];
-  const [setProgress] = useState(0.13);
   const [registeredEvents, setRegisteredEvents] = useState([]);  // Manejar eventos registrados como un array
   const [showQRModal, setShowQRModal] = useState(false);
   const [currentQR, setCurrentQR] = useState('');
@@ -67,7 +67,23 @@ const EventsScreen = () => {
 
       {/* Contenedor principal */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Eventos destacados */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Tus Próximos Eventos</Text>
+          {registeredEvents.length > 0 ? (
+            registeredEvents.map(event => (
+              <Card key={event.id} style={styles.eventCard}>
+                <Card.Content>
+                  <Title>{event.title}</Title>
+                  <Paragraph>{event.dateFormatted}</Paragraph>
+                </Card.Content>
+              </Card>
+            ))
+          ) : (
+            <Text style={styles.noEventsText}>No estás registrado en ningún evento</Text>
+          )}
+        </View>
+        
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Eventos Destacados</Text>
           {filteredEvents.map(event => (
@@ -89,23 +105,6 @@ const EventsScreen = () => {
               </Card.Actions>
             </Card>
           ))}
-        </View>
-
-        {/* Mostrar eventos registrados */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Tus Próximos Eventos</Text>
-          {registeredEvents.length > 0 ? (
-            registeredEvents.map(event => (
-              <Card key={event.id} style={styles.eventCard}>
-                <Card.Content>
-                  <Title>{event.title}</Title>
-                  <Paragraph>{event.dateFormatted}</Paragraph>
-                </Card.Content>
-              </Card>
-            ))
-          ) : (
-            <Text style={styles.noEventsText}>No estás registrado en ningún evento</Text>
-          )}
         </View>
       </ScrollView>
 
