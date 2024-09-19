@@ -8,46 +8,37 @@ import { useRoute } from '@react-navigation/native';
 import HeaderBar from './HeaderBar'; 
 import QuickAccessBar from './QuickAccessBar';
 import featuredEvents from '../data/eventsData';
-import registerEvents from '../data/registeredEvents';
 
 const EventsScreen = () => {
   const route = useRoute();
   const usuario = route.params?.usuario;
   const selectedCategories = route.params?.selectedCategories || [];
-  const [progress, setProgress] = useState(0.13);
   const [registeredEvents, setRegisteredEvents] = useState([]);  // Manejar eventos registrados como un array
   const [showQRModal, setShowQRModal] = useState(false);
   const [currentQR, setCurrentQR] = useState('');
 
   useEffect(() => {
-    const timer = global.setTimeout(() => setProgress(0.64), 500);
-    return () => global.clearTimeout(timer);
+    // Cargar los eventos registrados desde AsyncStorage al iniciar
+    const loadRegisteredEvents = async () => {
+      try {
+        const storedEvents = await AsyncStorage.getItem('registeredEvents');
+        const parsedEvents = storedEvents ? JSON.parse(storedEvents) : [];
+        setRegisteredEvents(parsedEvents);
+      } catch (error) {
+        console.error("Error al cargar eventos registrados:", error);
+      }
+    };
+
+    loadRegisteredEvents();
   }, []);
 
-  // Función para guardar el registro localmente en AsyncStorage
-  const saveEventToStorage = async (event) => {
+  // Guardar los eventos registrados en AsyncStorage
+  const saveEventsToStorage = async (updatedEvents) => {
     try {
-      const storedEvents = await AsyncStorage.getItem('registeredEvents');
-      const parsedEvents = storedEvents ? JSON.parse(storedEvents) : [];
-
-      const newEvent = {
-        ...event,
-        usuario: {
-          id: usuario.id,
-          nombre: usuario.nombre,
-          email: usuario.email,
-        },
-      };
-
-      const updatedEvents = [...parsedEvents, newEvent];
-
-      // Guardar los eventos actualizados en AsyncStorage
       await AsyncStorage.setItem('registeredEvents', JSON.stringify(updatedEvents));
-
-      // Imprimir en consola para verificar
-      console.log('Eventos registrados:', updatedEvents);
+      console.log('Eventos actualizados guardados:', updatedEvents);
     } catch (error) {
-      console.error("Error al guardar el evento", error);
+      console.error("Error al guardar eventos registrados:", error);
     }
   };
 
@@ -62,11 +53,12 @@ const EventsScreen = () => {
     }
 
     global.setTimeout(() => {
-      // Agregar el evento completo a la lista de registrados localmente
-      setRegisteredEvents(prev => [...prev, event]);
+      // Agregar el evento a la lista de registrados localmente
+      const updatedEvents = [...registeredEvents, event];
+      setRegisteredEvents(updatedEvents);
 
-      // Guardar en almacenamiento local usando AsyncStorage
-      saveEventToStorage(event);
+      // Guardar en AsyncStorage
+      saveEventsToStorage(updatedEvents);
 
       Alert.alert(
         "Registro Exitoso",
@@ -77,6 +69,17 @@ const EventsScreen = () => {
       setCurrentQR(qrData);
       setShowQRModal(true);
     }, 1000);
+  };
+
+  // Desuscribirse de un evento
+  const unregisterFromEvent = (eventId) => {
+    const updatedEvents = registeredEvents.filter(e => e.id !== eventId);
+    setRegisteredEvents(updatedEvents);
+
+    // Guardar cambios en AsyncStorage
+    saveEventsToStorage(updatedEvents);
+
+    Alert.alert("Desuscripción Exitosa", "Te has desuscrito del evento.");
   };
 
   const validateQR = (qrData) => {
@@ -98,8 +101,9 @@ const EventsScreen = () => {
 
       {/* Contenedor principal */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Eventos Inscritos */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Tus Próximos Eventos</Text>
+          <Text style={styles.sectionTitle}>Tus Eventos Inscritos</Text>
           {registeredEvents.length > 0 ? (
             registeredEvents.map(event => (
               <Card key={event.id} style={styles.eventCard}>
@@ -107,13 +111,22 @@ const EventsScreen = () => {
                   <Title>{event.title}</Title>
                   <Paragraph>{event.dateFormatted}</Paragraph>
                 </Card.Content>
+                <Card.Actions>
+                  <TouchableOpacity
+                    style={[styles.button, styles.unregisterButton]}
+                    onPress={() => unregisterFromEvent(event.id)}
+                  >
+                    <Text style={styles.buttonText}>Desuscribirse</Text>
+                  </TouchableOpacity>
+                </Card.Actions>
               </Card>
             ))
           ) : (
             <Text style={styles.noEventsText}>No estás registrado en ningún evento</Text>
           )}
         </View>
-        
+
+        {/* Eventos Destacados */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Eventos Destacados</Text>
           {filteredEvents.map(event => (
@@ -206,6 +219,9 @@ const styles = StyleSheet.create({
   },
   registeredButton: {
     backgroundColor: '#4CAF50',
+  },
+  unregisterButton: {
+    backgroundColor: '#FF3B30',
   },
   qrModal: {
     backgroundColor: 'white',
