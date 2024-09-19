@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
-import { Card, Title, Paragraph} from 'react-native-paper';
+import { Card, Title, Paragraph } from 'react-native-paper';
 import QRCode from 'react-native-qrcode-svg';
 import Modal from 'react-native-modal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
 import HeaderBar from './HeaderBar'; 
 import QuickAccessBar from './QuickAccessBar';
-
 import featuredEvents from '../data/eventsData';
+import registerEvents from '../data/registeredEvents';
 
 const EventsScreen = () => {
   const route = useRoute();
   const usuario = route.params?.usuario;
-  const [progress, setProgress] = useState(0.13);
   const selectedCategories = route.params?.selectedCategories || [];
+  const [progress, setProgress] = useState(0.13);
   const [registeredEvents, setRegisteredEvents] = useState([]);  // Manejar eventos registrados como un array
   const [showQRModal, setShowQRModal] = useState(false);
   const [currentQR, setCurrentQR] = useState('');
@@ -22,6 +23,33 @@ const EventsScreen = () => {
     const timer = global.setTimeout(() => setProgress(0.64), 500);
     return () => global.clearTimeout(timer);
   }, []);
+
+  // Función para guardar el registro localmente en AsyncStorage
+  const saveEventToStorage = async (event) => {
+    try {
+      const storedEvents = await AsyncStorage.getItem('registeredEvents');
+      const parsedEvents = storedEvents ? JSON.parse(storedEvents) : [];
+
+      const newEvent = {
+        ...event,
+        usuario: {
+          id: usuario.id,
+          nombre: usuario.nombre,
+          email: usuario.email,
+        },
+      };
+
+      const updatedEvents = [...parsedEvents, newEvent];
+
+      // Guardar los eventos actualizados en AsyncStorage
+      await AsyncStorage.setItem('registeredEvents', JSON.stringify(updatedEvents));
+
+      // Imprimir en consola para verificar
+      console.log('Eventos registrados:', updatedEvents);
+    } catch (error) {
+      console.error("Error al guardar el evento", error);
+    }
+  };
 
   // Registrar al usuario en un evento
   const registerForEvent = (event) => {
@@ -34,8 +62,11 @@ const EventsScreen = () => {
     }
 
     global.setTimeout(() => {
-      // Agregar el evento completo a la lista de registrados
+      // Agregar el evento completo a la lista de registrados localmente
       setRegisteredEvents(prev => [...prev, event]);
+
+      // Guardar en almacenamiento local usando AsyncStorage
+      saveEventToStorage(event);
 
       Alert.alert(
         "Registro Exitoso",
@@ -83,7 +114,6 @@ const EventsScreen = () => {
           )}
         </View>
         
-
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Eventos Destacados</Text>
           {filteredEvents.map(event => (
