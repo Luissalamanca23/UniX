@@ -1,25 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Animated } from 'react-native';
-import { Avatar, Badge, ProgressBar, Card, Title, Paragraph, Appbar, Menu, Divider } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { Avatar, ProgressBar, Card, Paragraph } from 'react-native-paper';
+import { useRoute } from '@react-navigation/native';
 
-// Suponiendo que tienes una lista de eventos registrados
+// Importa la barra superior
+import HeaderBar from './HeaderBar'; 
+import QuickAccessBar from './QuickAccessBar';
 import registeredEventsData from '../data/registeredEvents'; // Carga los eventos registrados de un archivo o estado
 
 const Homepage = () => {
   const route = useRoute();
-  const navigation = useNavigation();
   const usuario = route.params?.usuario;
   const [progress, setProgress] = useState(0.13);
-  const [visibleMenu, setVisibleMenu] = useState(false);
-  const [visibleProfile, setVisibleProfile] = useState(false);
   const [registeredEvents, setRegisteredEvents] = useState([]);
-  const scrollOffsetY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const timer = setTimeout(() => setProgress(0.64), 500);
-    return () => clearTimeout(timer);
+    const timer = global.setTimeout(() => setProgress(0.64), 500);
+    return () => global.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -28,42 +25,10 @@ const Homepage = () => {
     setRegisteredEvents(upcomingEvents);
   }, []);
 
-  const openProfileMenu = () => setVisibleProfile(true);
-  const closeProfileMenu = () => setVisibleProfile(false);
-
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* Barra superior */}
-      <Appbar.Header style={styles.header}>
-        <Appbar.Content title="Unyx" titleStyle={styles.headerTitle} />
-
-        <Appbar.Action icon="bell-outline" onPress={() => Alert.alert("Notificaciones", "No hay nuevas notificaciones")} />
-
-        {/* Menú del perfil */}
-        <Menu
-          visible={visibleProfile}
-          onDismiss={closeProfileMenu}
-          anchor={
-            <TouchableOpacity onPress={openProfileMenu}>
-              <Avatar.Image size={40} source={{ uri: 'https://placehold.co/40x40' }} />
-            </TouchableOpacity>
-          }
-        >
-          <View style={styles.menuHeader}>
-            <Avatar.Image size={40} source={{ uri: 'https://placehold.co/40x40' }} />
-            <View>
-              <Text style={styles.username}>{usuario?.nombre || 'Usuario'}</Text>
-              <Text style={styles.email}>{usuario?.email || 'email@example.com'}</Text>
-            </View>
-          </View>
-
-          <Divider />
-          <Menu.Item onPress={() => navigation.navigate('Perfil', { usuario })} title="Ver perfil" icon="account" />
-          <Menu.Item onPress={() => navigation.navigate('Settings', { usuario })} title="Configuración" icon="cog" />
-          <Divider />
-          <Menu.Item onPress={() => Alert.alert("Cerrar Sesión", "Función no implementada")} title="Cerrar sesión" icon="logout" />
-        </Menu>
-      </Appbar.Header>
+    <View style={[styles.container, { flex: 1 }]}>
+      {/* Reutiliza la barra superior */}
+      <HeaderBar usuario={usuario} title="Unyx" />
 
       {/* Contenido Principal */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -107,26 +72,8 @@ const Homepage = () => {
           ))}
         </View>
       </ScrollView>
-
-      {/* Barra de acceso rápido inferior */}
-      <View style={styles.quickAccess}>
-        {[
-          { title: 'Inicio', icon: 'home' },
-          { title: 'Calendario', icon: 'calendar-month', screen: 'Calendario' },
-          { title: 'Clubs', icon: 'account-group', screen: 'Clubs' },
-          { title: 'Eventos', icon: 'calendar-star', screen: 'Eventos' },
-        ].map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.quickAccessItem}
-            onPress={() => item.screen ? navigation.navigate(item.screen, { usuario }) : Alert.alert(item.title, "Función no implementada")}
-          >
-            <Icon name={item.icon} size={24} color="#007AFF" />
-            <Text style={styles.quickAccessText}>{item.title}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </SafeAreaView>
+      <QuickAccessBar usuario={usuario} />
+    </View>
   );
 };
 

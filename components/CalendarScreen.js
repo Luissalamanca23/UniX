@@ -6,6 +6,8 @@ import { Card, Title, Paragraph, Appbar } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 import CalendarEvents from 'react-native-calendar-events';
+import HeaderBar from './HeaderBar'; 
+import QuickAccessBar from './QuickAccessBar';
 
 const CalendarScreen = () => {
   const route = useRoute();
@@ -57,8 +59,9 @@ const CalendarScreen = () => {
 
   return (
     <View style={styles.container}>
+      <HeaderBar usuario={usuario} title="Unyx - Calendario" />
       <Appbar.Header style={styles.header}>
-        <Appbar.Content title="Calendario de Eventos" titleStyle={styles.headerTitle} />
+        <Appbar.Content title="Mi calendario" titleStyle={styles.headerTitle} />
         <Appbar.Action icon="calendar-plus" onPress={connectCalendar} />
       </Appbar.Header>
 
@@ -88,6 +91,7 @@ const CalendarScreen = () => {
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>No hay eventos registrados para esta fecha.</Text>}
       />
+      <QuickAccessBar usuario={usuario} />
     </View>
   );
 };
@@ -96,7 +100,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F0F0F0',
-    padding: 10,
   },
   header: {
     backgroundColor: '#FFFFFF',
